@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--
+  Published at https://simplekile.github.io/monos-releases/open.html
+  (monos.core.platform.deep_link.WEB_OPEN_PAGE). Discord only makes http(s)
+  links clickable, so posts link here with the monos:// URL in the fragment;
+  this page hands it to the OS protocol handler (registered by the installer).
+  The fragment never reaches the server. Only monos:// targets are followed.
+-->
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Open in MONOS</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+         background: #121214; color: #fafafa; font: 15px/1.5 system-ui, sans-serif; }
+  main { max-width: 420px; padding: 24px; text-align: center; }
+  a.button { display: inline-block; margin-top: 12px; padding: 10px 18px; border-radius: 8px;
+             background: #6366f1; color: #fff; text-decoration: none; font-weight: 600; }
+  a.button:hover { background: #7577f5; }
+  p.hint { color: #a1a1aa; font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <p id="status">Đang mở MONOS… / Opening MONOS…</p>
+  <a class="button" id="open" href="#" hidden>Mở MONOS / Open MONOS</a>
+  <p class="hint" id="hint" hidden>Nếu không có gì xảy ra, hãy cài MONOS rồi bấm lại.<br>
+  Nothing happened? Install MONOS, then click again.</p>
+</main>
+<script>
+  (function () {
+    var target = "";
+    try { target = decodeURIComponent(location.hash.slice(1)); } catch (e) { target = ""; }
+    if (!/^monos:\/\//i.test(target)) {
+      document.getElementById("status").textContent = "Link MONOS không hợp lệ. / Not a valid MONOS link.";
+      return;
+    }
+    var button = document.getElementById("open");
+    button.href = target;
+    button.hidden = false;
+    document.getElementById("hint").hidden = false;
+    location.href = target;
+  })();
+</script>
+</body>
+</html>
