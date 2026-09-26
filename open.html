@@ -1,50 +1,260 @@
 <!DOCTYPE html>
 <!--
   Published at https://simplekile.github.io/monos-releases/open.html
-  (monos.core.platform.deep_link.WEB_OPEN_PAGE). Discord only makes http(s)
-  links clickable, so posts link here with the monos:// URL in the fragment;
-  this page hands it to the OS protocol handler (registered by the installer).
-  The fragment never reaches the server. Only monos:// targets are followed.
+  (monos.core.platform.deep_link.WEB_OPEN_PAGE), with favicon.png beside it.
+  Discord only makes http(s) links clickable, so posts link here with the
+  monos:// URL in the fragment; this page shows what the link opens and hands
+  it to the OS protocol handler (registered by the installer). The fragment
+  never reaches the server. Only monos:// targets are followed.
+  Look follows the app splash: #09090b, Syne wordmark with the accent period,
+  JetBrains Mono details.
 -->
 <html lang="vi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Open in MONOS</title>
+<meta name="description" content="Open this link in Monos.">
+<meta property="og:title" content="Open in Monos">
+<meta property="og:description" content="A link into the Monos production pipeline.">
+<title>Open in Monos</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: dark; }
+  :root {
+    color-scheme: dark;
+    --bg: #09090b;
+    --line: rgba(255, 255, 255, 0.07);
+    --line-2: rgba(255, 255, 255, 0.12);
+    --text: #fafafa;
+    --text-2: #d4d4d8;
+    --muted: #8b8b94;
+    --faint: #5c5c66;
+    --accent: #3b82f6;
+    --ok: #22c55e;
+    --warn: #f59e0b;
+    --bad: #ef4444;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  }
   [hidden] { display: none !important; }
-  body { margin: 0; min-height: 100vh; display: grid; place-items: center;
-         background: #121214; color: #fafafa; font: 15px/1.5 system-ui, sans-serif; }
-  main { max-width: 420px; padding: 24px; text-align: center; }
-  a.button { display: inline-block; margin-top: 12px; padding: 10px 18px; border-radius: 8px;
-             background: #6366f1; color: #fff; text-decoration: none; font-weight: 600; }
-  a.button:hover { background: #7577f5; }
-  p.hint { color: #a1a1aa; font-size: 13px; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh; display: grid; place-items: center; padding: 24px 16px;
+    color: var(--text); font: 14px/1.5 Inter, system-ui, sans-serif;
+    background:
+      radial-gradient(560px 320px at 50% 38%, rgba(59, 130, 246, .10), transparent 70%),
+      var(--bg);
+  }
+  main {
+    width: 100%; max-width: 420px; padding: 28px 28px 24px; border-radius: 16px;
+    background: linear-gradient(180deg, #121216 0%, #0d0d10 100%);
+    border: 1px solid var(--line);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .04), 0 24px 60px -24px rgba(0, 0, 0, .8);
+  }
+
+  .brand { display: flex; align-items: center; gap: 8px;
+           font: 500 10.5px/1 var(--mono); letter-spacing: .08em; color: var(--muted); }
+  .brand img { width: 18px; height: 18px; border-radius: 4px; }
+  h1 { margin: 20px 0 0; font: 700 40px/1 Syne, Inter, sans-serif; letter-spacing: -.015em; }
+  h1 .dot { color: var(--accent); }
+
+  .status { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; padding: 5px 11px 5px 9px;
+            border-radius: 999px; background: rgba(255, 255, 255, .04); border: 1px solid var(--line);
+            color: var(--text-2); font-size: 13px; }
+  .pip { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none;
+         box-shadow: 0 0 0 0 rgba(59, 130, 246, .55); animation: pulse 1.6s ease-out infinite; }
+  .status[data-state="done"] .pip { background: var(--ok); animation: none; }
+  .status[data-state="stuck"] .pip { background: var(--warn); animation: none; }
+  .status[data-state="bad"] .pip { background: var(--bad); animation: none; }
+  @keyframes pulse { 70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+
+  dl { margin: 20px 0 0; padding: 4px 14px; border-radius: 10px; background: rgba(0, 0, 0, .25);
+       border: 1px solid var(--line); display: grid; grid-template-columns: 76px 1fr;
+       font: 12px/1.5 var(--mono); }
+  dt, dd { padding: 7px 0; border-top: 1px solid var(--line); }
+  dt:first-of-type, dt:first-of-type + dd { border-top: 0; }
+  dt { color: var(--faint); font-size: 10.5px; letter-spacing: .08em; line-height: 18px; }
+  dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
+  .sep { color: var(--faint); }
+
+  .actions { margin-top: 20px; }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+         font-weight: 600; border-radius: 10px; cursor: pointer; user-select: none; outline: none;
+         transition: background .22s ease-out, border-color .22s ease-out, color .22s ease-out,
+                     box-shadow .22s ease-out, transform .22s ease-out; }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+  .btn:hover, .btn:active { transition-duration: .08s; }
+  .btn:focus-visible { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(96, 165, 250, .7); }
+
+  .btn-primary { height: 46px; font-size: 15px; color: #fff;
+                 background: linear-gradient(180deg, #4b8df8 0%, #2f6fe4 100%);
+                 border: 1px solid rgba(255, 255, 255, .10);
+                 box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 8px 24px -10px rgba(59, 130, 246, .75); }
+  .btn-primary:hover { background: linear-gradient(180deg, #5c9bff 0%, #3b7cf0 100%);
+                       box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 10px 28px -10px rgba(59, 130, 246, .9); }
+  .btn-primary:active { transform: translateY(1px); background: linear-gradient(180deg, #2f6fe4 0%, #2563eb 100%);
+                        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .25), 0 4px 12px -8px rgba(59, 130, 246, .6); }
+  .btn-primary svg { opacity: .9; transition: transform .22s ease-out; }
+  .btn-primary:hover svg { transform: translate(1px, -1px); transition-duration: .08s; }
+
+  .note { margin: 10px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
+
+  footer { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line);
+           display: flex; align-items: center; justify-content: space-between; gap: 12px;
+           font-size: 12.5px; color: var(--muted); }
+  .btn-ghost { height: 34px; padding: 0 12px 0 10px; font-size: 13px; font-weight: 500; color: var(--text-2);
+               background: rgba(255, 255, 255, .03); border: 1px solid var(--line-2); }
+  .btn-ghost svg { width: 15px; height: 15px; color: var(--accent); }
+  .btn-ghost .ver { font: 500 11.5px/1 var(--mono); color: var(--muted); transition: color .22s ease-out; }
+  .btn-ghost:hover { color: var(--text); background: rgba(59, 130, 246, .10); border-color: rgba(59, 130, 246, .45); }
+  .btn-ghost:hover .ver { color: #93c5fd; transition-duration: .08s; }
+  .btn-ghost:active { transform: translateY(1px); background: rgba(59, 130, 246, .16); }
+
+  @media (max-width: 420px) { main { padding: 22px 18px 18px; } h1 { font-size: 34px; } }
+  @media (prefers-reduced-motion: reduce) { .pip { animation: none; } .btn, .btn svg { transition: none; } }
 </style>
 </head>
 <body>
 <main>
-  <p id="status">Đang mở MONOS… / Opening MONOS…</p>
-  <a class="button" id="open" href="#" hidden>Mở MONOS / Open MONOS</a>
-  <p class="hint" id="hint" hidden>Nếu không có gì xảy ra, hãy cài MONOS rồi bấm lại.<br>
-  Nothing happened? Install MONOS, then click again.</p>
+  <div class="brand"><img src="favicon.png" alt=""><span>MONO STUDIO</span></div>
+  <h1>Monos<span class="dot">.</span></h1>
+  <div class="status" id="status" data-state="opening" role="status" aria-live="polite">
+    <span class="pip" aria-hidden="true"></span><span id="status-text"></span>
+  </div>
+  <dl id="details" hidden></dl>
+  <div class="actions" id="actions" hidden>
+    <a class="btn btn-primary" id="open" href="#">
+      <span id="open-label"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
+    </a>
+    <p class="note" id="note"></p>
+  </div>
+  <footer>
+    <span id="no-app"></span>
+    <a class="btn btn-ghost" id="download" href="https://github.com/simplekile/monos-releases/releases/latest" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M5 20h14"/></svg>
+      <span id="download-label"></span><span class="ver" id="download-ver" hidden></span>
+    </a>
+  </footer>
 </main>
 <script>
-  (function () {
-    var target = "";
-    try { target = decodeURIComponent(location.hash.slice(1)); } catch (e) { target = ""; }
-    if (!/^monos:\/\//i.test(target)) {
-      document.getElementById("status").textContent = "Link MONOS không hợp lệ. / Not a valid MONOS link.";
-      return;
+(function () {
+  // The studio reads Vietnamese; English browsers get English. ?lang=en|vi forces one (preview).
+  var forced = (location.search.match(/[?&]lang=(en|vi)\b/) || [])[1];
+  var vi = forced ? forced === "vi" : !/^en\b/i.test(navigator.language || "");
+  var T = vi ? {
+    opening: "Đang mở trong Monos…",
+    opened: "Đã chuyển sang Monos. Có thể đóng tab này.",
+    stuck: "Chưa thấy Monos mở?",
+    bad: "Link Monos không hợp lệ.",
+    open: "Mở trong Monos",
+    retry: "Mở lại",
+    note: "Trình duyệt sẽ hỏi trước khi mở. Tick “Luôn cho phép” để lần sau mở thẳng.",
+    noApp: "Chưa có Monos?",
+    download: "Tải Monos",
+    project: "PROJECT", page: "TRANG", batch: "ĐỢT", sender: "GỬI TỪ", dept: "BỘ PHẬN",
+    item: "MỤC", trash: "MỤC", task: "VIỆC"
+  } : {
+    opening: "Opening in Monos…",
+    opened: "Handed over to Monos. You can close this tab.",
+    stuck: "Monos didn't open?",
+    bad: "Not a valid Monos link.",
+    open: "Open in Monos",
+    retry: "Try again",
+    note: "Your browser asks first. Tick “Always allow” to open straight away next time.",
+    noApp: "Don't have Monos?",
+    download: "Download Monos",
+    project: "PROJECT", page: "PAGE", batch: "BATCH", sender: "FROM", dept: "DEPT",
+    item: "ITEM", trash: "ITEM", task: "TASK"
+  };
+  var PAGES = {
+    assets: "Assets", asset: "Assets", shots: "Shots", shot: "Shots", inbox: "Inbox",
+    guide: "Project Guide", project_guide: "Project Guide", delivery: "Outbox", outbox: "Outbox",
+    internal_check: "Internal check", trash: "Trash", schedule: "Schedule", dashboard: "Dashboard",
+    library: "Library"
+  };
+
+  function $(id) { return document.getElementById(id); }
+  function setStatus(state, text) { $("status").setAttribute("data-state", state); $("status-text").textContent = text; }
+  function row(label, parts) {
+    var dt = document.createElement("dt"); dt.textContent = label;
+    var dd = document.createElement("dd");
+    parts.forEach(function (p, i) {
+      if (i) { var s = document.createElement("span"); s.className = "sep"; s.textContent = " › "; dd.appendChild(s); }
+      dd.appendChild(document.createTextNode(p));
+    });
+    $("details").appendChild(dt); $("details").appendChild(dd);
+  }
+
+  $("no-app").textContent = T.noApp;
+  $("download-label").textContent = T.download;
+  // Name the current version and link its installer; the releases page stays as the fallback.
+  try {
+    fetch("https://api.github.com/repos/simplekile/monos-releases/releases/latest")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (rel) {
+        if (!rel) return;
+        var exe = (rel.assets || []).filter(function (a) { return /\.exe$/i.test(a.name); })[0];
+        if (exe) $("download").href = exe.browser_download_url;
+        if (rel.tag_name) { $("download-ver").textContent = String(rel.tag_name).replace(/^v/, ""); $("download-ver").hidden = false; }
+      }).catch(function () {});
+  } catch (e) {}
+
+  var target = "";
+  try { target = decodeURIComponent(location.hash.slice(1)); } catch (e) { target = ""; }
+  if (!/^monos:\/\//i.test(target)) { setStatus("bad", T.bad); return; }
+
+  // What the link opens, read from the link itself;, nothing is sent anywhere.
+  try {
+    var u = new URL(target.replace(/^monos:\/\//i, "https://monos.invalid/"));
+    var q = u.searchParams, kind = u.pathname.replace(/\//g, "") || u.host;
+    if (/^assign$/i.test(kind) || /^assign$/i.test(u.pathname.replace(/\//g, ""))) {
+      if (q.get("inbox")) row(T.task, [q.get("inbox")]);
+    } else {
+      var page = PAGES[(q.get("page") || "").toLowerCase()] || q.get("page") || "";
+      if (q.get("project")) row(T.project, [q.get("project")]);
+      var batch = (q.get("batch") || "").split("/").filter(Boolean);
+      if (batch.length >= 3) { row(T.batch, [batch.slice(2).join("/")]); row(T.sender, [batch[1] + " · " + batch[0]]); }
+      else if (batch.length) { row(T.batch, [batch.join(" · ")]); }
+      else if (page) {
+        var parts = [page];
+        if (q.get("dept")) parts.push(q.get("dept"));
+        row(T.page, parts);
+        if (q.get("item")) row(T.item, q.get("item").split("/"));
+        if (q.get("trash")) row(T.trash, [q.get("trash")]);
+        if (q.get("e") || q.get("entity")) row(T.item, [q.get("entity") || ("#" + q.get("e"))]);
+      }
     }
-    var button = document.getElementById("open");
-    button.href = target;
-    button.hidden = false;
-    document.getElementById("hint").hidden = false;
-    location.href = target;
-  })();
+    if ($("details").children.length) $("details").hidden = false;
+  } catch (e) {}
+
+  $("open").href = target;
+  $("open-label").textContent = T.open;
+  $("note").textContent = T.note;
+  $("actions").hidden = false;
+  setStatus("opening", T.opening);
+
+  // The protocol handler taking over usually moves focus away from the page.
+  var settled = false;
+  function opened() {
+    if (settled) return; settled = true;
+    setStatus("done", T.opened);
+    $("open-label").textContent = T.retry;
+  }
+  window.addEventListener("blur", function () { setTimeout(function () { if (!document.hasFocus()) opened(); }, 300); });
+  document.addEventListener("visibilitychange", function () { if (document.hidden) opened(); });
+  setTimeout(function () {
+    if (settled) return;
+    setStatus("stuck", T.stuck);
+    $("open-label").textContent = T.retry;
+  }, 4000);
+
+  // ?dry: show the page without handing off (preview / debugging).
+  if (!/[?&]dry\b/.test(location.search)) location.href = target;
+})();
 </script>
 </body>
 </html>
