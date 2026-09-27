@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<!--
+  Published at https://simplekile.github.io/monos-releases/ (root of the public
+  monos-releases repo, GitHub Pages from master /), next to open.html,
+  favicon.png and shots/. Intro + download page for the studio team.
+  The download button asks the GitHub API for the latest release and links its
+  .exe; if that fails it stays on the Releases page. Nothing to edit per release.
+  Two languages (vi/en) from one table below; the choice is remembered per browser.
+  Look follows open.html and the app splash: #09090b, Syne wordmark with the
+  accent period, JetBrains Mono details.
+  Internal for now: robots noindex. To go public, drop that meta.
+-->
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="Monos, the studio pipeline app for assets, shots, review and delivery.">
+<meta property="og:title" content="Monos">
+<meta property="og:description" content="The studio pipeline app: assets, shots, review and delivery in one window.">
+<meta property="og:image" content="https://simplekile.github.io/monos-releases/shots/shots-comp.webp">
+<title>Monos</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #09090b;
+    --surface: #111114;
+    --surface-2: #16161a;
+    --line: rgba(255, 255, 255, 0.07);
+    --line-2: rgba(255, 255, 255, 0.12);
+    --text: #fafafa;
+    --text-2: #d4d4d8;
+    --muted: #8b8b94;
+    --faint: #5c5c66;
+    --accent: #3b82f6;
+    --accent-2: #93c5fd;
+    --ok: #22c55e;
+    --warn: #f59e0b;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --wrap: 1120px;
+  }
+  [hidden] { display: none !important; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    color: var(--text); background: var(--bg);
+    font: 15px/1.6 Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 720px) { .wrap { padding: 0 32px; } }
+
+  /* Top bar */
+  header.top { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(12px);
+               background: rgba(9, 9, 11, .72); border-bottom: 1px solid var(--line); }
+  header.top .wrap { display: flex; align-items: center; gap: 16px; height: 56px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo img { width: 22px; height: 22px; border-radius: 5px; }
+  .logo b { font: 700 19px/1 Syne, Inter, sans-serif; letter-spacing: -.01em; }
+  .logo b i { font-style: normal; color: var(--accent); }
+  nav.links { display: none; gap: 4px; margin-left: 8px; }
+  @media (min-width: 820px) { nav.links { display: flex; } }
+  nav.links a { padding: 6px 10px; border-radius: 8px; text-decoration: none; color: var(--muted);
+                font-size: 13.5px; font-weight: 500; transition: color .22s ease-out, background .22s ease-out; }
+  nav.links a:hover { color: var(--text); background: rgba(255, 255, 255, .05); transition-duration: .08s; }
+  .spacer { flex: 1; }
+
+  .lang { display: flex; padding: 2px; border-radius: 8px; background: rgba(255, 255, 255, .04);
+          border: 1px solid var(--line); }
+  .lang button { all: unset; cursor: pointer; padding: 3px 9px; border-radius: 6px;
+                 font: 500 11.5px/18px var(--mono); color: var(--muted);
+                 transition: color .22s ease-out, background .22s ease-out; }
+  .lang button:hover { color: var(--text); background: rgba(255, 255, 255, .06); transition-duration: .08s; }
+  .lang button[aria-pressed="true"] { color: #fff; background: var(--accent); }
+  .lang button[aria-pressed="true"]:hover { background: #5c9bff; }
+  .lang button:focus-visible { box-shadow: 0 0 0 2px rgba(96, 165, 250, .7); }
+
+  /* Buttons (same recipe as open.html) */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+         font-weight: 600; border-radius: 10px; cursor: pointer; user-select: none; outline: none; white-space: nowrap;
+         transition: background .22s ease-out, border-color .22s ease-out, color .22s ease-out,
+                     box-shadow .22s ease-out, transform .22s ease-out; }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+  .btn:hover, .btn:active { transition-duration: .08s; }
+  .btn:focus-visible { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(96, 165, 250, .7); }
+  .btn-primary { height: 48px; padding: 0 22px 0 18px; font-size: 15px; color: #fff;
+                 background: linear-gradient(180deg, #4b8df8 0%, #2f6fe4 100%);
+                 border: 1px solid rgba(255, 255, 255, .10);
+                 box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 8px 24px -10px rgba(59, 130, 246, .75); }
+  .btn-primary:hover { background: linear-gradient(180deg, #5c9bff 0%, #3b7cf0 100%);
+                       box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 10px 28px -10px rgba(59, 130, 246, .9); }
+  .btn-primary:active { transform: translateY(1px); background: linear-gradient(180deg, #2f6fe4 0%, #2563eb 100%);
+                        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .25), 0 4px 12px -8px rgba(59, 130, 246, .6); }
+  .btn-small { height: 34px; padding: 0 14px 0 12px; font-size: 13px; }
+  .btn-ghost { height: 48px; padding: 0 18px; font-size: 14px; font-weight: 500; color: var(--text-2);
+               background: rgba(255, 255, 255, .03); border: 1px solid var(--line-2); }
+  .btn-ghost:hover { color: var(--text); background: rgba(59, 130, 246, .10); border-color: rgba(59, 130, 246, .45); }
+  .btn-ghost:active { transform: translateY(1px); background: rgba(59, 130, 246, .16); }
+
+  /* Hero */
+  .hero { position: relative; padding: 72px 0 0; text-align: center; }
+  .hero::before { content: ""; position: absolute; inset: -80px 0 auto; height: 620px; pointer-events: none;
+                  background: radial-gradient(640px 360px at 50% 30%, rgba(59, 130, 246, .16), transparent 70%); }
+  .eyebrow { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 10px;
+             border-radius: 999px; background: rgba(255, 255, 255, .04); border: 1px solid var(--line);
+             font: 500 11.5px/1 var(--mono); letter-spacing: .04em; color: var(--muted); }
+  .eyebrow .pip { width: 6px; height: 6px; border-radius: 50%; background: var(--ok);
+                  box-shadow: 0 0 0 3px rgba(34, 197, 94, .15); }
+  .hero h1 { position: relative; margin: 22px 0 0; font: 700 clamp(56px, 11vw, 104px)/.95 Syne, Inter, sans-serif;
+             letter-spacing: -.025em; }
+  .hero h1 i { font-style: normal; color: var(--accent); }
+  .hero p.lede { position: relative; max-width: 620px; margin: 20px auto 0; color: var(--text-2);
+                 font-size: clamp(16px, 2.2vw, 19px); line-height: 1.55; }
+  .cta { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 32px; }
+  .meta { position: relative; margin-top: 14px; min-height: 18px; font: 400 12px/1.5 var(--mono); color: var(--faint); }
+  .meta b { color: var(--muted); font-weight: 500; }
+
+  /* Screenshot viewer */
+  .viewer { position: relative; margin: 56px auto 0; max-width: 1040px; }
+  .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 18px; }
+  .tabs button { all: unset; cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 500;
+                 color: var(--muted); border: 1px solid var(--line);
+                 transition: color .22s ease-out, background .22s ease-out, border-color .22s ease-out; }
+  .tabs button:hover { color: var(--text); background: rgba(255, 255, 255, .05); border-color: var(--line-2);
+                       transition-duration: .08s; }
+  .tabs button[aria-selected="true"] { color: var(--text); background: rgba(59, 130, 246, .14);
+                                       border-color: rgba(59, 130, 246, .5); }
+  .tabs button[aria-selected="true"]:hover { background: rgba(59, 130, 246, .2); }
+  .tabs button:focus-visible { box-shadow: 0 0 0 2px rgba(96, 165, 250, .7); }
+  .frame { position: relative; border-radius: 14px; overflow: hidden; background: #131316;
+           border: 1px solid var(--line-2);
+           box-shadow: 0 0 0 1px rgba(0, 0, 0, .6), 0 40px 90px -30px rgba(0, 0, 0, .9),
+                       0 20px 80px -40px rgba(59, 130, 246, .35); }
+  .frame img { display: block; width: 100%; height: auto; aspect-ratio: 1920 / 1200; object-fit: cover;
+               object-position: top left; opacity: 0; transition: opacity .35s ease-out; }
+  .frame img.on { opacity: 1; transition-duration: .2s; }
+  .frame img + img { position: absolute; inset: 0; }
+  .frame::after { content: ""; position: absolute; inset: auto 0 0; height: 26%; pointer-events: none;
+                  background: linear-gradient(180deg, transparent, var(--bg)); }
+  .caption { margin: 14px auto 0; max-width: 620px; text-align: center; color: var(--muted); font-size: 14px; min-height: 45px; }
+
+  /* Sections */
+  section.block { padding: 96px 0 0; }
+  .kicker { font: 500 11.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  h2 { margin: 12px 0 0; font: 700 clamp(28px, 4.4vw, 40px)/1.1 Syne, Inter, sans-serif; letter-spacing: -.015em; }
+  .sub { margin: 12px 0 0; max-width: 620px; color: var(--muted); }
+
+  .grid { display: grid; gap: 14px; margin-top: 36px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 980px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .card { padding: 22px 22px 20px; border-radius: 14px; border: 1px solid var(--line);
+          background: linear-gradient(180deg, var(--surface-2) 0%, var(--surface) 100%);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .03);
+          transition: border-color .22s ease-out, transform .22s ease-out; }
+  .card:hover { border-color: var(--line-2); transform: translateY(-2px); transition-duration: .08s; }
+  .card .ico { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px;
+               color: var(--accent-2); background: rgba(59, 130, 246, .12); border: 1px solid rgba(59, 130, 246, .25); }
+  .card .ico svg { width: 18px; height: 18px; }
+  .card h3 { margin: 16px 0 0; font-size: 16px; font-weight: 600; }
+  .card p { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+  .dccs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+  .chip { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255, 255, 255, .03);
+          font: 500 12.5px/1.2 var(--mono); color: var(--text-2); }
+
+  /* Install */
+  .install { display: grid; gap: 28px; margin-top: 36px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .install { grid-template-columns: 1.4fr 1fr; gap: 40px; } }
+  ol.steps { list-style: none; counter-reset: s; margin: 0; padding: 0; display: grid; gap: 12px; }
+  ol.steps li { counter-increment: s; position: relative; padding: 16px 18px 16px 58px; border-radius: 12px;
+                border: 1px solid var(--line); background: var(--surface); }
+  ol.steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 18px; top: 16px;
+                        font: 500 13px/24px var(--mono); color: var(--accent); }
+  ol.steps b { display: block; font-weight: 600; }
+  ol.steps span { display: block; margin-top: 2px; color: var(--muted); font-size: 14px; }
+  .req { padding: 22px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); align-self: start; }
+  .req h3 { margin: 0; font-size: 15px; font-weight: 600; }
+  .req ul { margin: 12px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  .req li { display: flex; gap: 10px; color: var(--text-2); font-size: 14px; }
+  .req li svg { width: 16px; height: 16px; flex: none; margin-top: 3px; color: var(--ok); }
+  .note { margin-top: 16px; padding: 12px 14px; border-radius: 10px; font-size: 13px; color: var(--text-2);
+          background: rgba(245, 158, 11, .08); border: 1px solid rgba(245, 158, 11, .25); }
+  .note b { color: var(--warn); }
+
+  /* Releases */
+  .rel { margin-top: 36px; display: grid; gap: 10px; }
+  .rel details { border-radius: 12px; border: 1px solid var(--line); background: var(--surface); overflow: hidden; }
+  .rel summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 14px 18px;
+                 transition: background .22s ease-out; }
+  .rel summary::-webkit-details-marker { display: none; }
+  .rel summary:hover { background: rgba(255, 255, 255, .03); transition-duration: .08s; }
+  .rel summary:focus-visible { outline: none; box-shadow: inset 0 0 0 2px rgba(96, 165, 250, .7); }
+  .rel .tag { font: 500 13px/1 var(--mono); color: var(--text); min-width: 76px; }
+  .rel .date { font: 400 12px/1 var(--mono); color: var(--faint); }
+  .rel .latest { padding: 3px 8px; border-radius: 999px; font: 500 10.5px/1.2 var(--mono); color: var(--ok);
+                 background: rgba(34, 197, 94, .1); border: 1px solid rgba(34, 197, 94, .3); }
+  .rel .chev { margin-left: auto; width: 16px; height: 16px; color: var(--faint); transition: transform .22s ease-out; }
+  .rel details[open] .chev { transform: rotate(180deg); }
+  .rel .body { padding: 2px 18px 16px 18px; color: var(--text-2); font-size: 14px; border-top: 1px solid var(--line); }
+  .rel .body h4 { margin: 14px 0 4px; font-size: 13px; font-weight: 600; color: var(--text); }
+  .rel .body ul { margin: 4px 0 0; padding-left: 18px; }
+  .rel .body li { margin: 3px 0; }
+  .rel .body li::marker { color: var(--faint); }
+  .rel .body code { font: 12.5px var(--mono); color: var(--accent-2); }
+  .rel .body .dl { display: inline-flex; margin-top: 14px; }
+  .rel-empty { color: var(--muted); font-size: 14px; }
+  .more { display: inline-block; margin-top: 16px; font-size: 14px; color: var(--muted); text-decoration: none; }
+  .more:hover { color: var(--text); }
+
+  /* Final CTA + footer */
+  .final { margin: 110px 0 0; padding: 48px 24px; text-align: center; border-radius: 18px; border: 1px solid var(--line);
+           background: radial-gradient(520px 240px at 50% 0%, rgba(59, 130, 246, .16), transparent 70%), var(--surface); }
+  .final h2 { margin: 0; }
+  .final .cta { margin-top: 24px; }
+  footer { margin-top: 64px; border-top: 1px solid var(--line); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; padding-top: 22px; padding-bottom: 36px;
+                 font: 400 12px/1.5 var(--mono); color: var(--faint); }
+  footer a { text-decoration: none; color: var(--muted); }
+  footer a:hover { color: var(--text); }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .btn, .card, .frame img, .tabs button, .rel .chev { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top"><img src="favicon.png" alt=""><b>Monos<i>.</i></b></a>
+    <nav class="links">
+      <a href="#features" data-t="navFeatures"></a>
+      <a href="#install" data-t="navInstall"></a>
+      <a href="#releases" data-t="navReleases"></a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="vi">VI</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+    <a class="btn btn-primary btn-small dl-link" href="https://github.com/simplekile/monos-releases/releases/latest" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      <span data-t="dlShort"></span>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <span class="eyebrow"><span class="pip"></span><span data-t="eyebrow"></span></span>
+      <h1>Monos<i>.</i></h1>
+      <p class="lede" data-t="lede"></p>
+      <div class="cta">
+        <a class="btn btn-primary dl-link" href="https://github.com/simplekile/monos-releases/releases/latest" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          <span data-t="dlWin"></span>
+        </a>
+        <a class="btn btn-ghost" href="#features" data-t="seeMore"></a>
+      </div>
+      <div class="meta" id="meta"></div>
+
+      <div class="viewer">
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" data-shot="0" data-t="tabAssets"></button>
+          <button type="button" role="tab" data-shot="1" data-t="tabComp"></button>
+          <button type="button" role="tab" data-shot="2" data-t="tabLighting"></button>
+          <button type="button" role="tab" data-shot="3" data-t="tabInbox"></button>
+        </div>
+        <div class="frame">
+          <img src="shots/assets.webp" width="1920" height="1200" alt="" class="on">
+          <img src="shots/shots-comp.webp" width="1920" height="1200" alt="" loading="lazy">
+          <img src="shots/shots-lighting.webp" width="1920" height="1200" alt="" loading="lazy">
+          <img src="shots/inbox.webp" width="1920" height="1200" alt="" loading="lazy">
+        </div>
+        <p class="caption" id="caption"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="features">
+    <div class="wrap">
+      <div class="kicker" data-t="featKicker"></div>
+      <h2 data-t="featTitle"></h2>
+      <p class="sub" data-t="featSub"></p>
+      <div class="grid">
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg></div>
+          <h3 data-t="f1t"></h3><p data-t="f1d"></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="m3 7 3-4h12l3 4"/><path d="M8 3l2 4M14 3l2 4"/></svg></div>
+          <h3 data-t="f2t"></h3><p data-t="f2d"></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-6Z"/></svg></div>
+          <h3 data-t="f3t"></h3><p data-t="f3d"></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 9 5 3-5 3Z"/></svg></div>
+          <h3 data-t="f4t"></h3><p data-t="f4d"></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M8 4v16M13 4l5 16"/></svg></div>
+          <h3 data-t="f5t"></h3><p data-t="f5d"></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/><path d="M8 9h8M8 13h5"/></svg></div>
+          <h3 data-t="f6t"></h3><p data-t="f6d"></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div>
+          <h3 data-t="f7t"></h3><p data-t="f7d"></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 11v4M10 13h4"/></svg></div>
+          <h3 data-t="f8t"></h3><p data-t="f8d"></p>
+        </div>
+        <div class="card">
+          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
+          <h3 data-t="f9t"></h3><p data-t="f9d"></p>
+        </div>
+      </div>
+      <div class="dccs">
+        <span class="chip">Maya</span><span class="chip">Blender</span><span class="chip">Houdini</span>
+        <span class="chip">Fusion</span><span class="chip">Substance Painter</span><span class="chip">RizomUV</span>
+        <span class="chip">Affinity</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="install">
+    <div class="wrap">
+      <div class="kicker" data-t="insKicker"></div>
+      <h2 data-t="insTitle"></h2>
+      <div class="install">
+        <ol class="steps">
+          <li><b data-t="s1t"></b><span data-t="s1d"></span></li>
+          <li><b data-t="s2t"></b><span data-t="s2d"></span></li>
+          <li><b data-t="s3t"></b><span data-t="s3d"></span></li>
+          <li><b data-t="s4t"></b><span data-t="s4d"></span></li>
+          <li><b data-t="s5t"></b><span data-t="s5d"></span></li>
+        </ol>
+        <div class="req">
+          <h3 data-t="reqTitle"></h3>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-t="r1"></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-t="r2"></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-t="r3"></span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span data-t="r4"></span></li>
+          </ul>
+          <div class="note" data-t="smartscreen"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="releases">
+    <div class="wrap">
+      <div class="kicker" data-t="relKicker"></div>
+      <h2 data-t="relTitle"></h2>
+      <div class="rel" id="rel"><p class="rel-empty" data-t="relLoading"></p></div>
+      <a class="more" href="https://github.com/simplekile/monos-releases/releases" rel="noopener" data-t="relAll"></a>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="final">
+      <h2 data-t="finalTitle"></h2>
+      <div class="cta">
+        <a class="btn btn-primary dl-link" href="https://github.com/simplekile/monos-releases/releases/latest" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          <span data-t="dlWin"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Monos<span style="color:var(--accent)">.</span> <span id="foot-ver"></span></span>
+    <span class="spacer"></span>
+    <a href="https://github.com/simplekile/monos-releases/releases" rel="noopener" data-t="footReleases"></a>
+    <span data-t="footInternal"></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var REPO = "simplekile/monos-releases";
+
+  var TEXT = {
+    vi: {
+      navFeatures: "Tính năng", navInstall: "Cài đặt", navReleases: "Phiên bản",
+      dlShort: "Tải về", dlWin: "Tải cho Windows", seeMore: "Xem tính năng",
+      eyebrow: "Pipeline app của studio",
+      lede: "Asset, shot, review và giao file trong một cửa sổ. Mở đúng file làm việc, gửi đúng chỗ, xem đúng bản mới nhất.",
+      metaLoading: "Đang tìm bản mới nhất…",
+      metaFail: "Windows 10/11 · 64-bit",
+      tabAssets: "Assets", tabComp: "Shots · Comp", tabLighting: "Shots · Lighting", tabInbox: "Inbox",
+      cap0: "Mọi asset của project theo từng department, trạng thái Waiting, Working, Published ngay trên thẻ. Inspector bên phải cho thấy tiến độ của cả 12 department.",
+      cap1: "Shot theo department Comp: thumbnail lấy từ bản mới nhất, mở Fusion đúng work file chỉ với một cú bấm.",
+      cap2: "Cùng danh sách shot nhưng ở department Lighting: đổi department là đổi trạng thái, version và DCC tương ứng.",
+      cap3: "Inbox: các đợt file khách gửi xếp theo ngày, mở ra xem trước rồi phân về đúng asset hoặc shot.",
+      featKicker: "Tính năng", featTitle: "Mọi thứ một project cần",
+      featSub: "Monos chạy trên chính thư mục project của studio (NAS hoặc Dropbox). Không có server, không có database riêng: thư mục là nguồn sự thật.",
+      f1t: "Assets và Shots", f1d: "Duyệt theo type và department, trạng thái từng department, version mới nhất, thumbnail và inspector một trang.",
+      f2t: "Mở DCC đúng file", f2d: "Chọn department, DCC và work file; Monos tạo file mới theo quy ước đặt tên khi cần và hỏi trước khi làm.",
+      f3t: "Inbox và Distribute", f3d: "Nhận file từ khách hoặc freelancer, xem trước, rồi phân về asset và shot bằng hàng đợi có Undo.",
+      f4t: "Review player", f4d: "Video và image sequence, EXR qua OCIO/ACES, so sánh A/B, zoom, soi pixel, thông số render.",
+      f5t: "Library", f5d: "Thư viện asset chung trên NAS: tìm sâu theo tên file, kéo thả thẳng ra DCC.",
+      f6t: "Notes và mention", f6d: "Ghi chú trên từng item, @mention đồng đội, báo sang Discord kèm link mở thẳng vào Monos.",
+      f7t: "Internal check và Outbox", f7d: "Gửi bản cho kiểm tra nội bộ rồi giao cho khách theo một luồng rõ ràng, có lịch sử.",
+      f8t: "Local-first, an toàn", f8d: "Dữ liệu nằm cạnh file làm việc. Thùng rác giữ file đã xoá theo số ngày bạn đặt.",
+      f9t: "Tự cập nhật", f9d: "Mở app là biết có bản mới. Cài bản mới ngay trong Settings › Updates.",
+      insKicker: "Cài đặt", insTitle: "Chạy được trong vài phút",
+      s1t: "Tải bộ cài", s1d: "Bấm Tải cho Windows để lấy file Monos_Setup_<version>.exe mới nhất.",
+      s2t: "Chạy bộ cài", s2d: "Làm theo các bước; không cần quyền admin. Monos được thêm vào Start menu.",
+      s3t: "Đăng nhập bằng Discord", s3d: "Tài khoản Discord của bạn phải có trong danh sách thành viên studio. Chưa có thì nhờ admin thêm.",
+      s4t: "Chọn studio và project", s4d: "Trỏ tới thư mục studio trên NAS hoặc Dropbox, rồi mở project đang làm.",
+      s5t: "Cài công cụ xem media", s5d: "Vào Settings › Updates › Components để tải mpv và FFmpeg cho Review player.",
+      reqTitle: "Yêu cầu",
+      r1: "Windows 10 hoặc 11, 64-bit", r2: "Truy cập được thư mục studio (NAS qua SMB hoặc Dropbox)",
+      r3: "Tài khoản Discord có trong roster của studio", r4: "Card đồ hoạ hỗ trợ DirectX 12 để review mượt",
+      smartscreen: "<b>Windows SmartScreen</b> có thể cảnh báo khi chạy bộ cài lần đầu. Bấm <b>More info</b> rồi <b>Run anyway</b>.",
+      relKicker: "Phiên bản", relTitle: "Có gì mới",
+      relLoading: "Đang tải danh sách phiên bản…", relFail: "Không tải được danh sách. Xem trên trang Releases.",
+      relLatest: "mới nhất", relAll: "Xem tất cả phiên bản →", relDl: "Tải bản này", relNoNotes: "Không có ghi chú.",
+      finalTitle: "Sẵn sàng bắt đầu?",
+      footReleases: "Releases trên GitHub", footInternal: "Dành cho thành viên studio"
+    },
+    en: {
+      navFeatures: "Features", navInstall: "Install", navReleases: "Releases",
+      dlShort: "Download", dlWin: "Download for Windows", seeMore: "See features",
+      eyebrow: "The studio pipeline app",
+      lede: "Assets, shots, review and delivery in one window. Open the right work file, send to the right place, see the latest version.",
+      metaLoading: "Looking up the latest version…",
+      metaFail: "Windows 10/11 · 64-bit",
+      tabAssets: "Assets", tabComp: "Shots · Comp", tabLighting: "Shots · Lighting", tabInbox: "Inbox",
+      cap0: "Every asset in the project by department, with Waiting, Working and Published right on the card. The inspector shows progress across all 12 departments.",
+      cap1: "Shots in the Comp department: thumbnails come from the latest version, and one click opens the right Fusion work file.",
+      cap2: "The same shots in Lighting: switching department switches status, version and DCC with it.",
+      cap3: "Inbox: client deliveries grouped by date. Open one to preview it, then distribute files to the right asset or shot.",
+      featKicker: "Features", featTitle: "Everything a project needs",
+      featSub: "Monos works on the studio's own project folders (NAS or Dropbox). No server, no separate database: the folders are the source of truth.",
+      f1t: "Assets and Shots", f1d: "Browse by type and department, see each department's status, the latest version, thumbnails and a one-page inspector.",
+      f2t: "Open DCCs on the right file", f2d: "Pick department, DCC and work file; Monos creates a new file by the naming rules when needed and asks first.",
+      f3t: "Inbox and Distribute", f3d: "Receive files from clients or freelancers, preview them, then distribute to assets and shots through a queue with Undo.",
+      f4t: "Review player", f4d: "Video and image sequences, EXR through OCIO/ACES, A/B compare, zoom, pixel probe, render stats.",
+      f5t: "Library", f5d: "The shared asset library on the NAS: deep search by file name, drag straight into your DCC.",
+      f6t: "Notes and mentions", f6d: "Notes on every item, @mention teammates, posts to Discord with links that open straight into Monos.",
+      f7t: "Internal check and Outbox", f7d: "Send work to internal check, then deliver to the client in one clear flow with history.",
+      f8t: "Local-first and safe", f8d: "Data lives next to the work files. Trash keeps deleted files for as many days as you set.",
+      f9t: "Updates itself", f9d: "Monos tells you when a new version is out. Install it from Settings › Updates.",
+      insKicker: "Install", insTitle: "Up and running in minutes",
+      s1t: "Download the installer", s1d: "Click Download for Windows to get the latest Monos_Setup_<version>.exe.",
+      s2t: "Run the installer", s2d: "Follow the steps; no admin rights needed. Monos is added to the Start menu.",
+      s3t: "Sign in with Discord", s3d: "Your Discord account must be on the studio roster. If it is not, ask an admin to add you.",
+      s4t: "Pick the studio and project", s4d: "Point Monos at the studio folder on the NAS or Dropbox, then open your project.",
+      s5t: "Install the media tools", s5d: "Go to Settings › Updates › Components to download mpv and FFmpeg for the Review player.",
+      reqTitle: "Requirements",
+      r1: "Windows 10 or 11, 64-bit", r2: "Access to the studio folder (NAS over SMB, or Dropbox)",
+      r3: "A Discord account on the studio roster", r4: "A DirectX 12 graphics card for smooth review",
+      smartscreen: "<b>Windows SmartScreen</b> may warn you the first time. Click <b>More info</b>, then <b>Run anyway</b>.",
+      relKicker: "Releases", relTitle: "What's new",
+      relLoading: "Loading releases…", relFail: "Could not load releases. See the Releases page.",
+      relLatest: "latest", relAll: "All releases →", relDl: "Download this version", relNoNotes: "No notes.",
+      finalTitle: "Ready to start?",
+      footReleases: "Releases on GitHub", footInternal: "For studio members"
+    }
+  };
+
+  var lang = "vi", latest = null, releases = null, shot = 0;
+  try { lang = localStorage.getItem("monos.lang") || ""; } catch (e) { lang = ""; }
+  if (!TEXT[lang]) lang = /^vi/i.test(navigator.language || "") ? "vi" : "en";
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function fmtDate(iso) {
+    var d = new Date(iso); if (isNaN(d)) return "";
+    function p(n) { return (n < 10 ? "0" : "") + n; }
+    return p(d.getDate()) + "/" + p(d.getMonth() + 1) + "/" + d.getFullYear();
+  }
+  function fmtSize(b) { return b ? (b / 1048576).toFixed(0) + " MB" : ""; }
+  function exeOf(rel) { return (rel.assets || []).filter(function (a) { return /\.exe$/i.test(a.name); })[0]; }
+
+  // Release notes are Markdown; show headings, bullets, bold and code, everything else escaped.
+  // CI notes repeat the title, prefix each change with its commit hash and end with an
+  // installer footnote; drop those so only the changes remain.
+  function notes(md) {
+    var out = [], inList = false;
+    String(md || "").split(/\r?\n/).forEach(function (line) {
+      if (/^#{1,6}\s+Monos\s+v?\d/i.test(line) || /^\s*_.*_\s*$/.test(line)) return;
+      line = line.replace(/^(\s*[-*]\s+)[0-9a-f]{7,40}\s+/i, "$1");
+      if (/^\s*[-*]\s+Bump VERSION/i.test(line)) return;
+      var inline = function (s) {
+        return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`([^`]+)`/g, "<code>$1</code>");
+      };
+      var m;
+      if ((m = line.match(/^\s*[-*]\s+(.*)/))) {
+        if (!inList) { out.push("<ul>"); inList = true; }
+        out.push("<li>" + inline(m[1]) + "</li>");
+        return;
+      }
+      if (inList) { out.push("</ul>"); inList = false; }
+      if ((m = line.match(/^#{1,6}\s+(.*)/))) out.push("<h4>" + inline(m[1]) + "</h4>");
+      else if (line.trim()) out.push("<p>" + inline(line) + "</p>");
+    });
+    if (inList) out.push("</ul>");
+    return out.join("");
+  }
+
+  function renderMeta() {
+    var T = TEXT[lang], el = $("meta");
+    if (latest === null) { el.textContent = T.metaLoading; return; }
+    if (!latest) { el.textContent = T.metaFail; return; }
+    var exe = exeOf(latest), parts = ["<b>" + esc(String(latest.tag_name).replace(/^v/, "")) + "</b>"];
+    if (exe) parts.push(fmtSize(exe.size));
+    parts.push(fmtDate(latest.published_at), "Windows 10/11 · 64-bit");
+    el.innerHTML = parts.filter(Boolean).join(" · ");
+  }
+
+  function renderReleases() {
+    var T = TEXT[lang], box = $("rel");
+    if (releases === null) { box.innerHTML = '<p class="rel-empty">' + esc(T.relLoading) + "</p>"; return; }
+    if (!releases.length) { box.innerHTML = '<p class="rel-empty">' + esc(T.relFail) + "</p>"; return; }
+    box.innerHTML = releases.map(function (r, i) {
+      var exe = exeOf(r);
+      return '<details' + (i === 0 ? " open" : "") + '><summary>' +
+        '<span class="tag">' + esc(r.tag_name) + "</span>" +
+        '<span class="date">' + fmtDate(r.published_at) + "</span>" +
+        (i === 0 ? '<span class="latest">' + esc(T.relLatest) + "</span>" : "") +
+        '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
+        '</summary><div class="body">' + (r.body ? notes(r.body) : "<p>" + esc(T.relNoNotes) + "</p>") +
+        (exe ? '<a class="btn btn-ghost btn-small dl" href="' + esc(exe.browser_download_url) + '" rel="noopener">' +
+               esc(T.relDl) + " · " + fmtSize(exe.size) + "</a>" : "") +
+        "</div></details>";
+    }).join("");
+  }
+
+  function renderShot() {
+    var imgs = document.querySelectorAll(".frame img");
+    for (var i = 0; i < imgs.length; i++) imgs[i].classList.toggle("on", i === shot);
+    document.querySelectorAll(".tabs button").forEach(function (b) {
+      b.setAttribute("aria-selected", String(+b.getAttribute("data-shot") === shot));
+    });
+    $("caption").textContent = TEXT[lang]["cap" + shot];
+  }
+
+  function apply() {
+    var T = TEXT[lang];
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-t]").forEach(function (el) {
+      var v = T[el.getAttribute("data-t")];
+      if (v === undefined) return;
+      if (/<b>/.test(v)) el.innerHTML = v; else el.textContent = v;
+    });
+    document.querySelectorAll(".lang button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang));
+    });
+    renderMeta(); renderReleases(); renderShot();
+  }
+
+  document.querySelectorAll(".lang button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      lang = b.getAttribute("data-lang");
+      try { localStorage.setItem("monos.lang", lang); } catch (e) {}
+      apply();
+    });
+  });
+  document.querySelectorAll(".tabs button").forEach(function (b) {
+    b.addEventListener("click", function () { shot = +b.getAttribute("data-shot"); renderShot(); });
+  });
+
+  apply();
+
+  // One call gives the latest release (download links, meta line) and the list below.
+  fetch("https://api.github.com/repos/" + REPO + "/releases?per_page=6")
+    .then(function (r) { return r.ok ? r.json() : []; })
+    .then(function (list) {
+      list = (list || []).filter(function (r) { return !r.draft && !r.prerelease; });
+      releases = list; latest = list[0] || false;
+      var exe = latest && exeOf(latest);
+      if (exe) document.querySelectorAll(".dl-link").forEach(function (a) { a.href = exe.browser_download_url; });
+      if (latest) $("foot-ver").textContent = latest.tag_name;
+      renderMeta(); renderReleases();
+    })
+    .catch(function () { releases = []; latest = false; renderMeta(); renderReleases(); });
+})();
+</script>
+</body>
+</html>
