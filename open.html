@@ -237,13 +237,23 @@
   $("actions").hidden = false;
   setStatus("opening", T.opening);
 
+  // ?dry: show the page without handing off (preview / debugging). ?noclose: hand off but keep the tab.
+  var dry = /[?&]dry\b/.test(location.search);
+  var autoClose = !dry && !/[?&]noclose\b/.test(location.search);
+
   // The protocol handler taking over usually moves focus away from the page.
-  var settled = false;
+  var settled = false, closeTimer = 0;
   function opened() {
     if (settled) return; settled = true;
     setStatus("done", T.opened);
     $("open-label").textContent = T.retry;
+    // Close the tab once Monos has it. The wait leaves the first-time "Open Monos?" prompt time to be
+    // answered, since closing the tab cancels it. Browsers only let a script close a tab with a single
+    // history entry; when they refuse, close() does nothing and the page above stays as it is.
+    if (autoClose) closeTimer = setTimeout(function () { try { window.close(); } catch (e) {} }, 1500);
   }
+  // Back on the page before the close (prompt cancelled, user came back to read): keep the tab.
+  window.addEventListener("focus", function () { if (closeTimer) { clearTimeout(closeTimer); closeTimer = 0; } });
   window.addEventListener("blur", function () { setTimeout(function () { if (!document.hasFocus()) opened(); }, 300); });
   document.addEventListener("visibilitychange", function () { if (document.hidden) opened(); });
   setTimeout(function () {
@@ -252,8 +262,7 @@
     $("open-label").textContent = T.retry;
   }, 4000);
 
-  // ?dry: show the page without handing off (preview / debugging).
-  if (!/[?&]dry\b/.test(location.search)) location.href = target;
+  if (!dry) location.href = target;
 })();
 </script>
 </body>
