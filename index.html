@@ -41,7 +41,10 @@
     --ok: #22c55e;
     --warn: #f59e0b;
     --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --display: Syne, Inter, system-ui, sans-serif;
     --wrap: 1120px;
+    --tilt: 19deg;       /* low camera: the top of each plane leans away */
+    --explode: .35;
   }
   [hidden] { display: none !important; }
   * { box-sizing: border-box; }
@@ -121,29 +124,82 @@
   .meta { position: relative; margin-top: 14px; min-height: 18px; font: 400 12px/1.5 var(--mono); color: var(--faint); }
   .meta b { color: var(--muted); font-weight: 500; }
 
-  /* Screenshot viewer */
-  .viewer { position: relative; margin: 56px auto 0; max-width: 1040px; }
-  .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 18px; }
-  .tabs button { all: unset; cursor: pointer; padding: 7px 14px; border-radius: 999px; font-size: 13px; font-weight: 500;
-                 color: var(--muted); border: 1px solid var(--line);
-                 transition: color .22s ease-out, background .22s ease-out, border-color .22s ease-out; }
-  .tabs button:hover { color: var(--text); background: rgba(255, 255, 255, .05); border-color: var(--line-2);
-                       transition-duration: .08s; }
-  .tabs button[aria-selected="true"] { color: var(--text); background: rgba(59, 130, 246, .14);
-                                       border-color: rgba(59, 130, 246, .5); }
-  .tabs button[aria-selected="true"]:hover { background: rgba(59, 130, 246, .2); }
-  .tabs button:focus-visible { box-shadow: 0 0 0 2px rgba(96, 165, 250, .7); }
-  .frame { position: relative; border-radius: 14px; overflow: hidden; background: #131316;
-           border: 1px solid var(--line-2);
-           box-shadow: 0 0 0 1px rgba(0, 0, 0, .6), 0 40px 90px -30px rgba(0, 0, 0, .9),
-                       0 20px 80px -40px rgba(59, 130, 246, .35); }
-  .frame img { display: block; width: 100%; height: auto; aspect-ratio: 1920 / 1200; object-fit: cover;
-               object-position: top left; opacity: 0; transition: opacity .35s ease-out; }
-  .frame img.on { opacity: 1; transition-duration: .2s; }
-  .frame img + img { position: absolute; inset: 0; }
-  .frame::after { content: ""; position: absolute; inset: auto 0 0; height: 26%; pointer-events: none;
-                  background: linear-gradient(180deg, transparent, var(--bg)); }
-  .caption { margin: 14px auto 0; max-width: 620px; text-align: center; color: var(--muted); font-size: 14px; min-height: 45px; }
+  /* 3D showcase: hero stage and feature close-ups */
+  /* ---------- 3D primitives ---------- */
+  .stage { position: relative; perspective: var(--persp, 700px); perspective-origin: 50% 115%; }
+  .rig { position: relative; transform-style: preserve-3d; margin-inline: auto;
+         transform: rotateX(calc(var(--tilt) * var(--tk, 1))) rotateY(calc(var(--yaw, 0deg) + var(--px, 0) * 5deg))
+                    rotateZ(var(--roll, 0deg));
+         transition: transform .7s cubic-bezier(.2, .7, .2, 1); }
+  .stage:hover .rig { transition-duration: .25s; }
+  .layer, .lift { transform-style: preserve-3d; }
+  .layer { position: absolute;
+           transform: translateZ(calc(var(--z, 0) * 1px * var(--explode) * var(--ek, 1)));
+           transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
+  .layer.flow { position: relative; }
+  .lift { position: relative; transform: translateZ(calc(var(--z, 0) * 1px * var(--explode) * var(--ek, 1)));
+          transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
+
+  /* crop: a window onto one region of a capture (data-box in capture pixels) */
+  .crop { position: relative; overflow: hidden; border-radius: 8px; background: #131316;
+          box-shadow: 0 0 0 1px rgba(255, 255, 255, .10), 0 30px 60px -20px rgba(0, 0, 0, .9),
+                      0 1px 0 0 rgba(255, 255, 255, .14) inset; }
+  .crop img { position: absolute; max-width: none; display: block; user-select: none; -webkit-user-drag: none; }
+  .crop::after { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+                 background: linear-gradient(160deg, rgba(255, 255, 255, .07) 0%, transparent 28%); }
+  .base .crop { border-radius: 14px; }
+  .base .crop img { filter: brightness(.5) saturate(.8); }
+
+  .floor { position: absolute; left: 6%; right: 6%; bottom: -6%; height: 24%; pointer-events: none;
+           background: radial-gradient(50% 50% at 50% 50%, rgba(59, 130, 246, .28), transparent 70%);
+           filter: blur(18px); transform: translateZ(-60px); }
+
+  .pill { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border-radius: 999px; white-space: nowrap;
+          font: 500 12px/1 var(--mono); color: var(--text); background: rgba(22, 22, 26, .92);
+          border: 1px solid var(--line-2); box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .9); }
+  .pill .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+  .pill.warn .dot { background: var(--warn); box-shadow: 0 0 10px var(--warn); }
+  .pill.blue { border-color: rgba(59, 130, 246, .5); color: var(--accent-2); }
+  .pill.blue .dot { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+  /* ---------- feature shots ---------- */
+  section.shot { padding-block: 72px 24px; overflow-x: clip; }
+  .shot .wrap { display: grid; gap: 8px 40px; align-items: center; grid-template-columns: 1fr; }
+  @media (min-width: 900px) {
+    .shot .wrap { grid-template-columns: 5fr 7fr; }
+    .shot.flip .wrap { grid-template-columns: 7fr 5fr; }
+    .shot.flip .copy { order: 2; }
+  }
+  .copy { min-width: 0; }
+  .shot .kicker { display: flex; gap: 10px; align-items: center; }
+  .kicker .new { padding: 3px 7px; border-radius: 999px; font-size: 10.5px; letter-spacing: .04em; color: var(--ok);
+                 background: rgba(34, 197, 94, .1); border: 1px solid rgba(34, 197, 94, .3); }
+  .copy h2 { margin: 14px 0 0; font: 700 clamp(28px, 4vw, 40px)/1.08 var(--display); letter-spacing: -.015em;
+             text-wrap: balance; }
+  .copy p { margin: 14px 0 0; max-width: 46ch; color: var(--muted); }
+  .shot .stage { padding-block: 60px; min-width: 0; }
+  .shot .rig { width: min(560px, 80%); }
+  .shot .stage { --explode: 0; --ek: .8; }
+
+  .shot .stage { perspective-origin: 50% 70%; }
+  .hero .stage { margin-top: 8px; padding-block: 60px 80px; }
+  .hero .rig { width: min(960px, 86%); aspect-ratio: 1920 / 1200; --yaw: -16deg; --roll: 1.5deg; }
+  .tlabel { position: absolute; right: 10px; top: -13px; font: 500 10.5px/1 var(--mono); color: var(--text-2); padding: 5px 9px; border-radius: 999px;
+            background: rgba(17, 17, 20, .94); border: 1px solid var(--line-2); white-space: nowrap; }
+  .swatches { display: flex; gap: 8px; padding: 8px 10px; border-radius: 100px; background: rgba(22, 22, 26, .94); border: 1px solid var(--line-2);
+              box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .9); }
+  .swatches i { width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2); }
+  .swatches i.on { box-shadow: 0 0 0 2px #09090b, 0 0 0 4px #fafafa; }
+  .more-title { margin: 0; font-size: 18px; font-weight: 600; color: var(--text-2); }
+  .grid.grid-4 { margin-top: 20px; }
+  @media (min-width: 980px) { .grid.grid-4 { grid-template-columns: repeat(4, 1fr); } }
+  @media (max-width: 640px) {
+    :root { --tilt: 10deg; }
+    .hero .stage { padding-block: 40px 60px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rig, .layer, .lift { transition: none; }
+  }
 
   /* Sections */
   section.block { padding: 96px 0 0; }
@@ -188,28 +244,79 @@
           background: rgba(245, 158, 11, .08); border: 1px solid rgba(245, 158, 11, .25); }
   .note b { color: var(--warn); }
 
-  /* Releases */
-  .rel { margin-top: 36px; display: grid; gap: 10px; }
-  .rel details { border-radius: 12px; border: 1px solid var(--line); background: var(--surface); overflow: hidden; }
-  .rel summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 14px 18px;
-                 transition: background .22s ease-out; }
-  .rel summary::-webkit-details-marker { display: none; }
-  .rel summary:hover { background: rgba(255, 255, 255, .03); transition-duration: .08s; }
-  .rel summary:focus-visible { outline: none; box-shadow: inset 0 0 0 2px rgba(96, 165, 250, .7); }
-  .rel .tag { font: 500 13px/1 var(--mono); color: var(--text); min-width: 76px; }
-  .rel .date { font: 400 12px/1 var(--mono); color: var(--faint); }
+  /* Releases: the latest as a card, then a timeline grouped by minor version */
+  .rel { margin-top: 36px; display: grid; gap: 40px; }
+  .rel-empty { color: var(--muted); font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .cchip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 999px; white-space: nowrap;
+           font: 500 11px/1.3 var(--mono); border: 1px solid; font-variant-numeric: tabular-nums; }
+  .cchip i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .cchip.new { color: #93c5fd; background: rgba(59, 130, 246, .10); border-color: rgba(59, 130, 246, .32); }
+  .cchip.improved { color: #c4b5fd; background: rgba(139, 92, 246, .10); border-color: rgba(139, 92, 246, .32); }
+  .cchip.fixed { color: #fcd34d; background: rgba(245, 158, 11, .09); border-color: rgba(245, 158, 11, .30); }
+  .cchip.changes { color: var(--muted); background: rgba(255, 255, 255, .03); border-color: var(--line-2); }
   .rel .latest { padding: 3px 8px; border-radius: 999px; font: 500 10.5px/1.2 var(--mono); color: var(--ok);
                  background: rgba(34, 197, 94, .1); border: 1px solid rgba(34, 197, 94, .3); }
-  .rel .chev { margin-left: auto; width: 16px; height: 16px; color: var(--faint); transition: transform .22s ease-out; }
-  .rel details[open] .chev { transform: rotate(180deg); }
-  .rel .body { padding: 2px 18px 16px 18px; color: var(--text-2); font-size: 14px; border-top: 1px solid var(--line); }
-  .rel .body h4 { margin: 14px 0 4px; font-size: 13px; font-weight: 600; color: var(--text); }
+
+  .rel-hero { position: relative; padding: 28px; border-radius: 18px; border: 1px solid var(--line-2); overflow: hidden;
+              background: radial-gradient(560px 220px at 0% 0%, rgba(59, 130, 246, .14), transparent 70%), var(--surface); }
+  .rel-hero .top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+  .rel-hero .ver { font: 700 clamp(34px, 5vw, 48px)/1 var(--display); letter-spacing: -.02em; }
+  .rel-hero .when { font: 400 12px/1.4 var(--mono); color: var(--faint); }
+  .rel-hero h3 { margin: 16px 0 0; font-size: clamp(18px, 2.4vw, 22px); font-weight: 600; text-wrap: balance; max-width: 40ch; }
+  .rel-hero .chips { margin-top: 14px; }
+  .rel-hero .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+  .rel-hero .body { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+
+  .rel .body { color: var(--text-2); font-size: 14px; max-width: 76ch; }
+  .rel .body h4 { margin: 16px 0 4px; font: 500 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .rel .body h4:first-child { margin-top: 0; }
+  .rel .body p { margin: 12px 0 2px; }
+  .rel .body p b { color: var(--text); font-weight: 600; }
   .rel .body ul { margin: 4px 0 0; padding-left: 18px; }
-  .rel .body li { margin: 3px 0; }
+  .rel .body li { margin: 4px 0; }
   .rel .body li::marker { color: var(--faint); }
   .rel .body code { font: 12.5px var(--mono); color: var(--accent-2); }
-  .rel .body .dl { display: inline-flex; margin-top: 14px; }
-  .rel-empty { color: var(--muted); font-size: 14px; }
+
+  .tl { display: grid; gap: 28px; }
+  .tl-group { display: grid; grid-template-columns: 1fr; gap: 10px; position: relative; }
+  @media (min-width: 760px) { .tl-group { grid-template-columns: 120px 1fr; gap: 24px; } }
+  .tl-label { display: flex; flex-direction: column; gap: 4px; }
+  @media (min-width: 760px) { .tl-label { position: sticky; top: 76px; align-self: start; padding-top: 12px; } }
+  .tl-label b { font: 700 26px/1 var(--display); letter-spacing: -.01em; }
+  .tl-label span { font: 400 11.5px/1.3 var(--mono); color: var(--faint); }
+  .tl-rows { display: grid; gap: 8px; }
+  .tl-rows details { border-radius: 12px; border: 1px solid var(--line); background: var(--surface); overflow: hidden;
+                     transition: border-color .22s ease-out; scroll-margin-top: 80px; }
+  .tl-rows details:hover { border-color: var(--line-2); transition-duration: .08s; }
+  .tl-rows details:target, .tl-rows details.hit { border-color: rgba(59, 130, 246, .55); }
+  .tl-rows summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+                     gap: 6px 14px; padding: 13px 16px; transition: background .22s ease-out; }
+  .tl-rows summary::-webkit-details-marker { display: none; }
+  .tl-rows summary:hover { background: rgba(255, 255, 255, .03); transition-duration: .08s; }
+  .tl-rows summary:focus-visible { outline: none; box-shadow: inset 0 0 0 2px rgba(96, 165, 250, .7); }
+  .tl-rows .tag { font: 500 13px/1 var(--mono); color: var(--text); min-width: 64px; }
+  .tl-rows .head { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-2); font-size: 14px; }
+  .tl-rows .side { display: flex; align-items: center; gap: 10px; }
+  .tl-rows .date { font: 400 12px/1 var(--mono); color: var(--faint); font-variant-numeric: tabular-nums; }
+  .tl-rows .chev { width: 16px; height: 16px; color: var(--faint); transition: transform .22s ease-out; }
+  .tl-rows details[open] .chev { transform: rotate(180deg); }
+  .tl-rows .chips { grid-column: 2 / -1; }
+  @media (max-width: 640px) {
+    .tl-rows summary { grid-template-columns: auto 1fr; }
+    .tl-rows .side { grid-column: 1 / -1; order: 3; }
+    .tl-rows .chips { grid-column: 1 / -1; }
+    .tl-rows .head { white-space: normal; }
+  }
+  .tl-rows .body { padding: 14px 16px 16px; border-top: 1px solid var(--line); }
+  .tl-rows .body .dl { display: inline-flex; margin-top: 14px; }
+  .rel .older { justify-self: start; margin-left: 0; }
+  @media (min-width: 760px) { .rel .older { margin-left: 144px; } }
+  .copylink { all: unset; cursor: pointer; font: 500 11.5px/1 var(--mono); color: var(--muted); padding: 6px 8px; border-radius: 8px;
+              margin-left: 8px; transition: color .22s ease-out, background .22s ease-out; }
+  .copylink:hover { color: var(--text); background: rgba(255, 255, 255, .05); transition-duration: .08s; }
+  .copylink:focus-visible { box-shadow: 0 0 0 2px rgba(96, 165, 250, .7); }
+
   .more { display: inline-block; margin-top: 16px; font-size: 14px; color: var(--muted); text-decoration: none; }
   .more:hover { color: var(--text); }
 
@@ -226,7 +333,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .btn, .card, .frame img, .tabs button, .rel .chev { transition: none; }
+    .btn, .card, .tl-rows .chev, .tl-rows details { transition: none; }
   }
 </style>
 </head>
@@ -266,22 +373,21 @@
         <a class="btn btn-ghost" href="#features" data-t="seeMore"></a>
       </div>
       <div class="meta" id="meta"></div>
-
-      <div class="viewer">
-        <div class="tabs" role="tablist">
-          <button type="button" role="tab" data-shot="0" data-t="tabAssets"></button>
-          <button type="button" role="tab" data-shot="1" data-t="tabComp"></button>
-          <button type="button" role="tab" data-shot="2" data-t="tabLighting"></button>
-          <button type="button" role="tab" data-shot="3" data-t="tabInbox"></button>
-        </div>
-        <div class="frame">
-          <img src="shots/assets.webp" width="1920" height="1200" alt="" class="on">
-          <img src="shots/shots-comp.webp" width="1920" height="1200" alt="" loading="lazy">
-          <img src="shots/shots-lighting.webp" width="1920" height="1200" alt="" loading="lazy">
-          <img src="shots/inbox.webp" width="1920" height="1200" alt="" loading="lazy">
-        </div>
-        <p class="caption" id="caption"></p>
+    </div>
+    <div class="stage" id="heroStage" data-lens="70">
+      <div class="rig" id="heroRig">
+        <div class="floor"></div>
+        <div class="layer base" style="left:0;top:0;width:100%;--z:-30"><div class="crop" data-src="shots/v2/asset_selected_dim_neutral.webp" data-box="0 0 2902 1856"></div></div>
+        <div class="layer" data-rel="0 0 2902 1856" data-place="0 0 112 1856" style="--z:40"><div class="crop" data-src="shots/v2/asset_selected_dim_neutral.webp" data-box="0 0 112 1856"></div></div>
+        <div class="layer" data-rel="0 0 2902 1856" data-place="112 60 466 1796" style="--z:90"><div class="crop" data-src="shots/v2/asset_selected_dim_neutral.webp" data-box="112 60 466 1796"></div></div>
+        <div class="layer" data-rel="0 0 2902 1856" data-place="2262 60 640 1796" style="--z:150"><div class="crop" data-src="shots/v2/asset_selected_dim_neutral.webp" data-box="2262 60 640 1796"></div></div>
+        <div class="layer" data-rel="0 0 2902 1856" data-place="1680 324 489 455" style="--z:240"><div class="crop" data-src="shots/v2/asset_selected_dim_neutral.webp" data-box="1680 324 489 455"></div></div>
+        <div class="layer" style="left:52%;top:40%;--z:320"><span class="pill "><span class="dot"></span>Linh · 10 of 13 published</span></div>
+        <div class="layer" style="left:78%;top:84%;--z:280"><span class="pill blue"><span class="dot"></span>Lantern Festival</span></div>
       </div>
+    </div>
+    <div class="wrap">
+
     </div>
   </section>
 
@@ -290,11 +396,140 @@
       <div class="kicker" data-t="featKicker"></div>
       <h2 data-t="featTitle"></h2>
       <p class="sub" data-t="featSub"></p>
-      <div class="grid">
-        <div class="card">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8 12 3 3 8v8l9 5 9-5Z"/><path d="m3 8 9 5 9-5"/><path d="M12 13v8"/></svg></div>
-          <h3 data-t="f1t"></h3><p data-t="f1d"></p>
+    </div>
+  </section>
+
+  <section class="shot" data-art="themes">
+    <div class="wrap">
+      <div class="copy">
+        <div class="kicker"><span data-t="sh_themes_k"></span> <span class="new" data-t="sh_themes_new"></span></div>
+        <h2 data-t="sh_themes_t"></h2>
+        <p data-t="sh_themes_d"></p>
+      </div>
+      <div class="stage" data-lens="70">
+        <div class="rig" style="width:min(460px,84%);--yaw:22deg;--roll:-1deg;--tk:1">
+          <div class="floor"></div>
+          <div class="layer flow" style="--z:0"><div class="crop" data-src="shots/v2/home_dim_neutral.webp" data-box="762 500 2068 1154"></div></div>
+          <div class="layer" style="left:6%;top:-9%;width:100%;--z:90"><div class="crop" data-src="shots/v2/home_dark_lime.webp" data-box="762 500 2068 1154"></div><span class="tlabel">Monos Dark · Lime</span></div>
+          <div class="layer" style="left:12%;top:-18%;width:100%;--z:180"><div class="crop" data-src="shots/v2/home_light_pink.webp" data-box="762 500 2068 1154"></div><span class="tlabel">Monos Light · Pink</span></div>
+          <div class="layer" style="left:-4%;top:78%;width:100%;--z:40"><span class="tlabel" style="position:static">Monos Dim · Neutral</span></div>
+          <div class="layer" style="left:58%;top:88%;--z:260"><div class="swatches"><i style="background:#cfcfd5"></i><i style="background:#6f9fe0"></i><i style="background:#e6c34a"></i><i class="on" style="background:#e48bba"></i><i style="background:#a8d86a"></i><i style="background:#5ec9bb"></i></div></div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shot flip" data-art="updates">
+    <div class="wrap">
+      <div class="copy">
+        <div class="kicker"><span data-t="sh_updates_k"></span> <span class="new" data-t="sh_updates_new"></span></div>
+        <h2 data-t="sh_updates_t"></h2>
+        <p data-t="sh_updates_d"></p>
+      </div>
+      <div class="stage" data-lens="70">
+        <div class="rig" style="width:min(400px,84%);--yaw:-22deg;--roll:1deg;--tk:1">
+          <div class="floor"></div>
+          <div class="layer flow" style="--z:0"><div class="crop" data-src="shots/v2/upd61_installing.webp" data-box="680 0 664 756" data-dim="1344 756"></div></div>
+          <div class="layer" style="left:-46%;top:56%;width:76%;--z:90"><div class="crop" data-src="shots/v2/upd61_installing.webp" data-box="56 496 600 222" data-dim="1344 756"></div></div>
+          <div class="layer" style="left:-18%;top:8%;width:37%;--z:150"><div class="crop" data-src="shots/v2/upd61_installing.webp" data-box="56 44 290 48" data-dim="1344 756"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shot" data-art="ask">
+    <div class="wrap">
+      <div class="copy">
+        <div class="kicker"><span data-t="sh_ask_k"></span> <span class="new" data-t="sh_ask_new"></span></div>
+        <h2 data-t="sh_ask_t"></h2>
+        <p data-t="sh_ask_d"></p>
+      </div>
+      <div class="stage" data-lens="70">
+        <div class="rig" style="width:min(280px,84%);--yaw:22deg;--roll:-1deg;--tk:1.1">
+          <div class="floor"></div>
+          <div class="layer flow" style="--z:0"><div class="crop" data-src="shots/v2/ask_dim_neutral.webp" data-box="2264 87 638 1712"></div></div>
+          <div class="layer" style="left:34%;top:60%;width:125%;--z:60"><div class="crop" data-src="shots/v2/watches_dim_neutral.webp" data-box="2046 1328 842 378"></div></div>
+          <div class="layer" style="left:-6%;top:28%;width:112%;--z:100"><div class="crop" data-src="shots/v2/ask_toast_dim_neutral.webp" data-box="1168 1686 678 84"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shot flip" data-art="home">
+    <div class="wrap">
+      <div class="copy">
+        <div class="kicker"><span data-t="sh_home_k"></span> <span class="new" data-t="sh_home_new"></span></div>
+        <h2 data-t="sh_home_t"></h2>
+        <p data-t="sh_home_d"></p>
+      </div>
+      <div class="stage" data-lens="70">
+        <div class="rig" style="width:min(440px,84%);--yaw:-22deg;--roll:1deg;--tk:1">
+          <div class="floor"></div>
+          <div class="layer" style="left:5%;top:-58%;width:100%;--z:-70"><div class="crop" data-src="shots/v2/home_dim_neutral.webp" data-box="766 606 1364 370"></div></div>
+          <div class="layer flow" style="--z:0"><div class="crop" data-src="shots/v2/home_dim_neutral.webp" data-box="766 1005 1364 504"></div></div>
+          <div class="layer" style="left:70%;top:-8%;--z:140"><span class="pill "><span class="dot"></span>12 posts today</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shot" data-art="review">
+    <div class="wrap">
+      <div class="copy">
+        <div class="kicker"><span data-t="sh_review_k"></span></div>
+        <h2 data-t="sh_review_t"></h2>
+        <p data-t="sh_review_d"></p>
+      </div>
+      <div class="stage" data-lens="70">
+        <div class="rig" style="width:min(470px,84%);--yaw:22deg;--roll:-1deg;--tk:1">
+          <div class="floor"></div>
+          <div class="layer flow" style="--z:0"><div class="crop" data-src="shots/v2/player_dim_neutral.webp" data-box="0 0 2880 1800" data-dim="2880 1800"></div></div>
+          <div class="layer" style="left:-6%;top:8%;--z:150"><span class="pill blue"><span class="dot"></span>sh010 · lighting v002</span></div>
+          <div class="layer" style="left:70%;top:58%;--z:110"><span class="pill "><span class="dot"></span>24 fps · 1001–1024</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shot flip" data-art="library">
+    <div class="wrap">
+      <div class="copy">
+        <div class="kicker"><span data-t="sh_library_k"></span></div>
+        <h2 data-t="sh_library_t"></h2>
+        <p data-t="sh_library_d"></p>
+      </div>
+      <div class="stage" data-lens="70">
+        <div class="rig" style="width:min(440px,84%);--yaw:-22deg;--roll:1deg;--tk:1">
+          <div class="floor"></div>
+          <div class="layer flow" style="--z:0"><div class="crop" data-src="shots/v2/library_dim_neutral.webp" data-box="112 88 1990 1768"></div></div>
+          <div class="layer" style="left:92%;top:22%;width:20%;--z:170"><div style="transform:rotate(6deg)"><div class="crop" data-src="shots/v2/library_dim_neutral.webp" data-box="1728 304 352 392"></div></div></div>
+          <div class="layer" style="left:90%;top:58%;--z:220"><span class="pill blue"><span class="dot"></span>Drop into Blender</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shot" data-art="discord">
+    <div class="wrap">
+      <div class="copy">
+        <div class="kicker"><span data-t="sh_discord_k"></span></div>
+        <h2 data-t="sh_discord_t"></h2>
+        <p data-t="sh_discord_d"></p>
+      </div>
+      <div class="stage" data-lens="70">
+        <div class="rig" style="width:min(380px,84%);--yaw:22deg;--roll:-1deg;--tk:1">
+          <div class="floor"></div>
+          <div class="layer flow" style="--z:0"><div class="crop" data-src="shots/v2/signin_dim.webp" data-box="990 565 844 726" data-dim="2822 1856"></div></div>
+          <div class="layer" style="left:-10%;top:92%;width:104%;--z:110"><div class="crop" data-src="shots/v2/signin_profile_dim.webp" data-box="1030 1682 874 86" data-dim="2822 1856"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block rest" id="more">
+    <div class="wrap">
+      <h3 class="more-title" data-t="moreTitle"></h3>
+      <div class="grid grid-4">
         <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="m3 7 3-4h12l3 4"/><path d="M8 3l2 4M14 3l2 4"/></svg></div>
           <h3 data-t="f2t"></h3><p data-t="f2d"></p>
@@ -304,28 +539,12 @@
           <h3 data-t="f3t"></h3><p data-t="f3d"></p>
         </div>
         <div class="card">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m10 9 5 3-5 3Z"/></svg></div>
-          <h3 data-t="f4t"></h3><p data-t="f4d"></p>
-        </div>
-        <div class="card">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4v16M8 4v16M13 4l5 16"/></svg></div>
-          <h3 data-t="f5t"></h3><p data-t="f5d"></p>
-        </div>
-        <div class="card">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/><path d="M8 9h8M8 13h5"/></svg></div>
-          <h3 data-t="f6t"></h3><p data-t="f6d"></p>
-        </div>
-        <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg></div>
           <h3 data-t="f7t"></h3><p data-t="f7d"></p>
         </div>
         <div class="card">
           <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M12 11v4M10 13h4"/></svg></div>
           <h3 data-t="f8t"></h3><p data-t="f8d"></p>
-        </div>
-        <div class="card">
-          <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></div>
-          <h3 data-t="f9t"></h3><p data-t="f9d"></p>
         </div>
       </div>
       <div class="dccs">
@@ -401,42 +620,65 @@
   var TEXT = {
     vi: {
       navFeatures: "Tính năng", navInstall: "Cài đặt", navReleases: "Phiên bản",
-      dlShort: "Tải về", dlWin: "Tải cho Windows", seeMore: "Xem tính năng",
-      eyebrow: "Pipeline app của studio",
-      lede: "Asset, shot, review và giao file trong một cửa sổ. Mở đúng file làm việc, gửi đúng chỗ, xem đúng bản mới nhất.",
-      metaLoading: "Đang tìm bản mới nhất…",
+      dlShort: "Tải về", dlWin: "Tải bản Windows", seeMore: "Xem tính năng",
+      eyebrow: "Công cụ pipeline của studio",
+      lede: "Quản lý asset, shot, xem review và gửi file cho khách, tất cả trong một app. Hết cảnh lục thư mục tìm file hay mở nhầm version cũ.",
+      metaLoading: "Đang kiểm tra bản mới nhất…",
       metaFail: "Windows 10/11 · 64-bit",
-      tabAssets: "Assets", tabComp: "Shots · Comp", tabLighting: "Shots · Lighting", tabInbox: "Inbox",
-      cap0: "Mọi asset của project theo từng department, trạng thái Waiting, Working, Published ngay trên thẻ. Inspector bên phải cho thấy tiến độ của cả 12 department.",
-      cap1: "Shot theo department Comp: thumbnail lấy từ bản mới nhất, mở Fusion đúng work file chỉ với một cú bấm.",
-      cap2: "Cùng danh sách shot nhưng ở department Lighting: đổi department là đổi trạng thái, version và DCC tương ứng.",
-      cap3: "Inbox: các đợt file khách gửi xếp theo ngày, mở ra xem trước rồi phân về đúng asset hoặc shot.",
-      featKicker: "Tính năng", featTitle: "Mọi thứ một project cần",
-      featSub: "Monos chạy trên chính thư mục project của studio (NAS hoặc Dropbox). Không có server, không có database riêng: thư mục là nguồn sự thật.",
-      f1t: "Assets và Shots", f1d: "Duyệt theo type và department, trạng thái từng department, version mới nhất, thumbnail và inspector một trang.",
-      f2t: "Mở DCC đúng file", f2d: "Chọn department, DCC và work file; Monos tạo file mới theo quy ước đặt tên khi cần và hỏi trước khi làm.",
-      f3t: "Inbox và Distribute", f3d: "Nhận file từ khách hoặc freelancer, xem trước, rồi phân về asset và shot bằng hàng đợi có Undo.",
-      f4t: "Review player", f4d: "Video và image sequence, EXR qua OCIO/ACES, so sánh A/B, zoom, soi pixel, thông số render.",
-      f5t: "Library", f5d: "Thư viện asset chung trên NAS: tìm sâu theo tên file, kéo thả thẳng ra DCC.",
-      f6t: "Notes và mention", f6d: "Ghi chú trên từng item, @mention đồng đội, báo sang Discord kèm link mở thẳng vào Monos.",
-      f7t: "Internal check và Outbox", f7d: "Gửi bản cho kiểm tra nội bộ rồi giao cho khách theo một luồng rõ ràng, có lịch sử.",
-      f8t: "Local-first, an toàn", f8d: "Dữ liệu nằm cạnh file làm việc. Thùng rác giữ file đã xoá theo số ngày bạn đặt.",
-      f9t: "Tự cập nhật", f9d: "Mở app là biết có bản mới. Cài bản mới ngay trong Settings › Updates.",
-      insKicker: "Cài đặt", insTitle: "Chạy được trong vài phút",
-      s1t: "Tải bộ cài", s1d: "Bấm Tải cho Windows để lấy file Monos_Setup_<version>.exe mới nhất.",
-      s2t: "Chạy bộ cài", s2d: "Làm theo các bước; không cần quyền admin. Monos được thêm vào Start menu.",
-      s3t: "Đăng nhập bằng Discord", s3d: "Tài khoản Discord của bạn phải có trong danh sách thành viên studio. Chưa có thì nhờ admin thêm.",
-      s4t: "Chọn studio và project", s4d: "Trỏ tới thư mục studio trên NAS hoặc Dropbox, rồi mở project đang làm.",
-      s5t: "Cài công cụ xem media", s5d: "Vào Settings › Updates › Components để tải mpv và FFmpeg cho Review player.",
-      reqTitle: "Yêu cầu",
-      r1: "Windows 10 hoặc 11, 64-bit", r2: "Truy cập được thư mục studio (NAS qua SMB hoặc Dropbox)",
-      r3: "Tài khoản Discord có trong roster của studio", r4: "Card đồ hoạ hỗ trợ DirectX 12 để review mượt",
-      smartscreen: "<b>Windows SmartScreen</b> có thể cảnh báo khi chạy bộ cài lần đầu. Bấm <b>More info</b> rồi <b>Run anyway</b>.",
+      featKicker: "Tính năng", featTitle: "Monos làm được gì",
+      featSub: "Monos làm việc thẳng trên thư mục project của studio, dù để trên NAS hay Dropbox. Không cần server, không cần database: file nằm đâu thì thông tin nằm đó.",
+      f1t: "Asset và shot", f1d: "Xem theo loại và department, biết ngay trạng thái từng khâu, version mới nhất, kèm thumbnail và bảng thông tin chi tiết.",
+      f2t: "Mở đúng file, đúng phần mềm", f2d: "Chọn department, phần mềm và file cần làm là xong. Cần file mới thì Monos đặt tên đúng quy ước, và luôn hỏi lại trước khi tạo.",
+      f3t: "Nhận và chia file", f3d: "File từ khách hay freelancer đổ về một chỗ. Xem trước, rồi chia về từng asset, shot. Lỡ tay thì Undo.",
+      f4t: "Xem review", f4d: "Xem video, image sequence, cả EXR với màu chuẩn OCIO/ACES. So sánh A/B, zoom sát, soi giá trị từng pixel.",
+      f5t: "Thư viện chung", f5d: "Kho tài nguyên của studio trên NAS. Tìm theo tên file bên trong từng gói, kéo thả thẳng vào phần mềm đang dùng.",
+      f6t: "Ghi chú và tag đồng đội", f6d: "Để lại ghi chú trên từng asset, shot, tag người khác bằng @. Thông báo đẩy sang Discord, bấm link là mở thẳng trong Monos.",
+      f7t: "Duyệt nội bộ và gửi khách", f7d: "Gửi bài cho lead duyệt trước, ổn rồi mới gửi khách. Lần gửi nào cũng được lưu lại.",
+      f8t: "Không phụ thuộc server", f8d: "Thông tin nằm ngay cạnh file làm việc. Xoá nhầm thì vẫn còn trong thùng rác, giữ bao nhiêu ngày tuỳ bạn chỉnh.",
+      f9t: "Tự cập nhật", f9d: "Có bản mới là Monos báo ngay khi mở app. Cập nhật luôn trong Settings › Updates.",
+      insKicker: "Cài đặt", insTitle: "Vài phút là dùng được",
+      s1t: "Tải bộ cài", s1d: "Bấm Tải bản Windows để lấy file Monos_Setup_<version>.exe mới nhất.",
+      s2t: "Cài đặt", s2d: "Cứ Next đến hết, không cần quyền admin. Cài xong là có Monos trong Start menu.",
+      s3t: "Đăng nhập bằng Discord", s3d: "Tài khoản Discord của bạn cần có trong danh sách thành viên studio. Chưa có thì nhắn admin thêm vào.",
+      s4t: "Chọn studio và project", s4d: "Chỉ tới thư mục studio trên NAS hoặc Dropbox, rồi mở project bạn đang làm.",
+      s5t: "Cài thêm công cụ xem video", s5d: "Vào Settings › Updates › Components tải mpv và FFmpeg để phần review chạy được.",
+      reqTitle: "Cần có",
+      r1: "Windows 10 hoặc 11, bản 64-bit", r2: "Quyền vào thư mục studio (NAS hoặc Dropbox)",
+      r3: "Tài khoản Discord đã được thêm vào studio", r4: "Card đồ hoạ hỗ trợ DirectX 12 để xem review cho mượt",
+      smartscreen: "Lần đầu chạy bộ cài, <b>Windows SmartScreen</b> có thể hiện cảnh báo. Bấm <b>More info</b> rồi chọn <b>Run anyway</b> là được.",
       relKicker: "Phiên bản", relTitle: "Có gì mới",
-      relLoading: "Đang tải danh sách phiên bản…", relFail: "Không tải được danh sách. Xem trên trang Releases.",
-      relLatest: "mới nhất", relAll: "Xem tất cả phiên bản →", relDl: "Tải bản này", relNoNotes: "Không có ghi chú.",
-      finalTitle: "Sẵn sàng bắt đầu?",
-      footReleases: "Releases trên GitHub", footInternal: "Dành cho thành viên studio"
+      relLoading: "Đang tải danh sách phiên bản…", relFail: "Chưa tải được danh sách, bạn xem trực tiếp ở trang Releases nhé.",
+      relLatest: "mới nhất", relAll: "Xem tất cả các bản trên GitHub →", relDl: "Tải bản này", relNoNotes: "Bản này không có ghi chú.",
+      relNew: "mới", relImproved: "cải thiện", relFixed: "sửa lỗi", relChanges: "thay đổi",
+      relCopy: "Chép link", relCopied: "Đã chép", relReleased: "Phát hành", relOlder: "Xem các bản cũ hơn",
+      finalTitle: "Cài Monos ngay",
+      footReleases: "Các bản phát hành trên GitHub", footInternal: "Dành riêng cho thành viên studio",
+      sh_themes_k: "Giao diện",
+      sh_themes_new: "mới từ 27.4",
+      sh_themes_t: "Dim, Dark hay Light. Màu nhấn tuỳ bạn.",
+      sh_themes_d: "Ba giao diện và sáu màu nhấn, đổi ngay từ menu avatar.",
+      sh_updates_k: "Cập nhật",
+      sh_updates_new: "mới từ 27.6",
+      sh_updates_t: "Cập nhật tự cài.",
+      sh_updates_d: "Có bản mới là bubble cạnh avatar báo ngay. Bấm Update rồi cứ làm tiếp: Monos tự cài bằng màn hình cập nhật riêng, tự mở lại và cho biết có gì mới.",
+      sh_ask_k: "Ask Monos · Watches",
+      sh_ask_new: "mới từ 27.5",
+      sh_ask_t: "Hỏi project. Xong là được báo.",
+      sh_ask_d: "Hỏi bằng lời thường, tiếng gì cũng được: bấm ` ở đâu cũng hỏi được. Câu trả lời dẫn thẳng tới shot hay file. Nhờ Monos canh một bản render là có thông báo khi nó xong, lỗi hay treo, trong Monos lẫn trên Discord.",
+      sh_home_k: "Home",
+      sh_home_new: "mới từ 27.4",
+      sh_home_t: "Cả team, trong một bảng tin.",
+      sh_home_d: "Publish, render, file làm việc mới, ghi chú và người mới vào project. Trả lời ngay dưới bài mà không phải rời Home.",
+      sh_review_k: "Review player",
+      sh_review_t: "Soi đúng pixel, không đoán qua preview.",
+      sh_review_d: "Xem image sequence và video từng frame: đánh dấu, ghi chú trên frame, zoom và thông số render, ngay cạnh pipeline.",
+      sh_library_k: "Thư viện",
+      sh_library_t: "Thư viện studio, kéo một cái là vào phần mềm.",
+      sh_library_d: "Tìm sâu trong mọi asset trên NAS, tới tận file bên trong. Kéo kết quả thả thẳng vào Blender, Maya hay Houdini.",
+      sh_discord_k: "Đăng nhập bằng Discord",
+      sh_discord_t: "Tài khoản Discord là tài khoản studio.",
+      sh_discord_d: "Không phải chia sẻ mật khẩu. Người đầu tiên vào workspace thành admin; người vào sau chờ duyệt trong Settings › Team.",
+      moreTitle: "Và phần còn lại của pipeline"
     },
     en: {
       navFeatures: "Features", navInstall: "Install", navReleases: "Releases",
@@ -445,11 +687,6 @@
       lede: "Assets, shots, review and delivery in one window. Open the right work file, send to the right place, see the latest version.",
       metaLoading: "Looking up the latest version…",
       metaFail: "Windows 10/11 · 64-bit",
-      tabAssets: "Assets", tabComp: "Shots · Comp", tabLighting: "Shots · Lighting", tabInbox: "Inbox",
-      cap0: "Every asset in the project by department, with Waiting, Working and Published right on the card. The inspector shows progress across all 12 departments.",
-      cap1: "Shots in the Comp department: thumbnails come from the latest version, and one click opens the right Fusion work file.",
-      cap2: "The same shots in Lighting: switching department switches status, version and DCC with it.",
-      cap3: "Inbox: client deliveries grouped by date. Open one to preview it, then distribute files to the right asset or shot.",
       featKicker: "Features", featTitle: "Everything a project needs",
       featSub: "Monos works on the studio's own project folders (NAS or Dropbox). No server, no separate database: the folders are the source of truth.",
       f1t: "Assets and Shots", f1d: "Browse by type and department, see each department's status, the latest version, thumbnails and a one-page inspector.",
@@ -473,13 +710,41 @@
       smartscreen: "<b>Windows SmartScreen</b> may warn you the first time. Click <b>More info</b>, then <b>Run anyway</b>.",
       relKicker: "Releases", relTitle: "What's new",
       relLoading: "Loading releases…", relFail: "Could not load releases. See the Releases page.",
-      relLatest: "latest", relAll: "All releases →", relDl: "Download this version", relNoNotes: "No notes.",
+      relLatest: "latest", relAll: "All releases on GitHub →", relDl: "Download this version", relNoNotes: "No notes.",
+      relNew: "new", relImproved: "improved", relFixed: "fixed", relChanges: "changes",
+      relCopy: "Copy link", relCopied: "Copied", relReleased: "Released", relOlder: "Show older releases",
       finalTitle: "Ready to start?",
-      footReleases: "Releases on GitHub", footInternal: "For studio members"
+      footReleases: "Releases on GitHub", footInternal: "For studio members",
+      sh_themes_k: "Themes",
+      sh_themes_new: "new in 27.4",
+      sh_themes_t: "Dim, Dark or Light. Your accent.",
+      sh_themes_d: "Three themes and six accent colours, switched straight from your avatar menu.",
+      sh_updates_k: "Updates",
+      sh_updates_new: "new in 27.6",
+      sh_updates_t: "Updates that install themselves.",
+      sh_updates_d: "A bubble at your avatar says a new version is out. Click Update and keep working: Monos installs it with its own update screen, opens again on its own and tells you what changed.",
+      sh_ask_k: "Ask Monos · Watches",
+      sh_ask_new: "new in 27.5",
+      sh_ask_t: "Ask the project. Hear when it's done.",
+      sh_ask_d: "Plain words, any language: press ` from anywhere. Answers link straight to the shot or file. Ask Monos to watch a render and you get a notice when it finishes, fails or stalls, in Monos and on Discord.",
+      sh_home_k: "Home",
+      sh_home_new: "new in 27.4",
+      sh_home_t: "The whole team, in one feed.",
+      sh_home_d: "Publishes, renders, new work files, notes and people joining. Reply under a post without leaving Home.",
+      sh_review_k: "Review player",
+      sh_review_t: "Read the pixel, not the preview.",
+      sh_review_d: "Image sequences and video frame by frame: marks, notes on frames, zoom and render stats, right next to the pipeline.",
+      sh_library_k: "Library",
+      sh_library_t: "The studio library, one drag from your DCC.",
+      sh_library_d: "Deep search across every asset on the NAS, down to the files inside. Drag a result straight into Blender, Maya or Houdini.",
+      sh_discord_k: "Sign in with Discord",
+      sh_discord_t: "Your Discord account is your studio login.",
+      sh_discord_d: "No passwords to share. The first person in a workspace becomes its admin; everyone after waits for approval in Settings › Team.",
+      moreTitle: "And the rest of the pipeline"
     }
   };
 
-  var lang = "vi", latest = null, releases = null, shot = 0;
+  var lang = "vi", latest = null, releases = null;
   try { lang = localStorage.getItem("monos.lang") || ""; } catch (e) { lang = ""; }
   if (!TEXT[lang]) lang = /^vi/i.test(navigator.language || "") ? "vi" : "en";
 
@@ -530,32 +795,124 @@
     el.innerHTML = parts.filter(Boolean).join(" · ");
   }
 
+  // One release body -> { headline, counts }. New notes group bullets under ### New / Improved /
+  // Fixed with **Feature** lines; older CI notes are a ### Changes list of commit subjects.
+  var SECTION = { "new": "new", "improved": "improved", "fixed": "fixed", "changes": "changes" };
+  function digest(md) {
+    var sec = "", counts = { "new": 0, improved: 0, fixed: 0, changes: 0 }, groups = {}, firstBullet = "";
+    String(md || "").split(/\r?\n/).forEach(function (line) {
+      var m;
+      if ((m = line.match(/^#{2,6}\s+(.*)/))) { sec = SECTION[m[1].trim().toLowerCase()] || ""; return; }
+      if (!sec) return;
+      if ((m = line.match(/^\s*\*\*(.+?)\*\*\s*$/))) { if (!groups[sec]) groups[sec] = m[1]; return; }
+      if ((m = line.match(/^\s*[-*]\s+(?:[0-9a-f]{7,40}\s+)?(.*)/i))) {
+        if (/^Bump VERSION/i.test(m[1])) return;
+        counts[sec]++;
+        if (!firstBullet) firstBullet = m[1];
+      }
+    });
+    var order = ["new", "improved", "fixed", "changes"], head = "";
+    order.some(function (k) { return (head = groups[k] || "") && true; });
+    // No **Feature** line: the first bullet, in the order the notes list them.
+    if (!head) head = firstBullet;
+    head = head.replace(/\*\*|`/g, "");
+    // Keep one clause: up to the first ": " or ". " when the line runs long.
+    if (head.length > 72) { var cutAt = head.search(/(: |\. |; | \()/); if (cutAt > 20) head = head.slice(0, cutAt); }
+    if (head.length > 90) head = head.slice(0, 88).replace(/\s+\S*$/, "") + "…";
+    return { head: head, counts: counts };
+  }
+
+  function chips(counts) {
+    var T = TEXT[lang];
+    return '<div class="chips">' + ["new", "improved", "fixed", "changes"].filter(function (k) { return counts[k]; })
+      .map(function (k) {
+        var label = T["rel" + k.charAt(0).toUpperCase() + k.slice(1)];
+        return '<span class="cchip ' + k + '"><i></i>' + counts[k] + " " + esc(label) + "</span>";
+      }).join("") + "</div>";
+  }
+
+  function ago(iso) {
+    var d = new Date(iso); if (isNaN(d) || !window.Intl || !Intl.RelativeTimeFormat) return "";
+    var s = (d - Date.now()) / 1000, rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+    var steps = [[60, "second"], [3600, "minute"], [86400, "hour"], [604800, "day"], [2629800, "week"], [31557600, "month"], [Infinity, "year"]];
+    var div = [1, 60, 3600, 86400, 604800, 2629800, 31557600];
+    for (var i = 0; i < steps.length; i++) if (Math.abs(s) < steps[i][0]) return rtf.format(Math.round(s / div[i]), steps[i][1]);
+    return "";
+  }
+
+  function minorOf(tag) { var m = String(tag).replace(/^v/, "").match(/^(\d+)\.(\d+)/); return m ? m[1] + "." + m[2] : String(tag); }
+  function idOf(tag) { return "v" + String(tag).replace(/^v/, "").replace(/[^\w.-]/g, ""); }
+  var CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
   function renderReleases() {
     var T = TEXT[lang], box = $("rel");
     if (releases === null) { box.innerHTML = '<p class="rel-empty">' + esc(T.relLoading) + "</p>"; return; }
     if (!releases.length) { box.innerHTML = '<p class="rel-empty">' + esc(T.relFail) + "</p>"; return; }
-    box.innerHTML = releases.map(function (r, i) {
-      var exe = exeOf(r);
-      return '<details' + (i === 0 ? " open" : "") + '><summary>' +
-        '<span class="tag">' + esc(r.tag_name) + "</span>" +
-        '<span class="date">' + fmtDate(r.published_at) + "</span>" +
-        (i === 0 ? '<span class="latest">' + esc(T.relLatest) + "</span>" : "") +
-        '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>' +
-        '</summary><div class="body">' + (r.body ? notes(r.body) : "<p>" + esc(T.relNoNotes) + "</p>") +
-        (exe ? '<a class="btn btn-ghost btn-small dl" href="' + esc(exe.browser_download_url) + '" rel="noopener">' +
-               esc(T.relDl) + " · " + fmtSize(exe.size) + "</a>" : "") +
-        "</div></details>";
-    }).join("");
+    var first = releases[0], d0 = digest(first.body), exe0 = exeOf(first);
+    var html = '<article class="rel-hero" id="' + idOf(first.tag_name) + '">' +
+      '<div class="top"><span class="ver">' + esc(String(first.tag_name).replace(/^v/, "")) + '</span>' +
+      '<span class="latest">' + esc(T.relLatest) + '</span>' +
+      '<span class="when">' + esc(T.relReleased) + " " + esc(ago(first.published_at)) + " · " + fmtDate(first.published_at) + "</span></div>" +
+      (d0.head ? "<h3>" + esc(d0.head) + "</h3>" : "") + chips(d0.counts) +
+      '<div class="actions">' + (exe0 ? '<a class="btn btn-primary btn-small" href="' + esc(exe0.browser_download_url) + '" rel="noopener">' +
+        esc(T.relDl) + " · " + fmtSize(exe0.size) + "</a>" : "") +
+        '<button type="button" class="copylink" data-copy="' + idOf(first.tag_name) + '">' + esc(T.relCopy) + "</button></div>" +
+      '<div class="body">' + (first.body ? notes(first.body) : "<p>" + esc(T.relNoNotes) + "</p>") + "</div></article>";
+
+    // The rest, grouped by minor version, newest first.
+    var groups = [], byMinor = {};
+    releases.slice(1).forEach(function (r) {
+      var k = minorOf(r.tag_name);
+      if (!byMinor[k]) { byMinor[k] = []; groups.push(k); }
+      byMinor[k].push(r);
+    });
+    // The three newest minors show; older ones wait behind a button (a #vX.Y.Z link opens them too).
+    html += '<div class="tl">' + groups.map(function (k, gi) {
+      var list = byMinor[k], newest = list[0].published_at, oldest = list[list.length - 1].published_at;
+      var range = fmtDate(oldest) === fmtDate(newest) ? fmtDate(newest) : fmtDate(oldest) + " – " + fmtDate(newest);
+      return '<div class="tl-group' + (gi >= 3 && !showOlder ? ' old" hidden' : '"') + '><div class="tl-label"><b>' + esc(k) + "</b><span>" + esc(range) + "</span></div>" +
+        '<div class="tl-rows">' + list.map(function (r) {
+          var dg = digest(r.body), exe = exeOf(r);
+          return '<details id="' + idOf(r.tag_name) + '"><summary>' +
+            '<span class="tag">' + esc(r.tag_name) + "</span>" +
+            '<span class="head">' + esc(dg.head) + "</span>" +
+            '<span class="side"><span class="date">' + fmtDate(r.published_at) + "</span>" + CHEV + "</span>" +
+            chips(dg.counts) + "</summary>" +
+            '<div class="body">' + (r.body ? notes(r.body) : "<p>" + esc(T.relNoNotes) + "</p>") +
+            (exe ? '<a class="btn btn-ghost btn-small dl" href="' + esc(exe.browser_download_url) + '" rel="noopener">' +
+                   esc(T.relDl) + " · " + fmtSize(exe.size) + "</a>" : "") +
+            '<button type="button" class="copylink" data-copy="' + idOf(r.tag_name) + '">' + esc(T.relCopy) + "</button>" +
+            "</div></details>";
+        }).join("") + "</div></div>";
+    }).join("") + "</div>" +
+      (groups.length > 3 && !showOlder ? '<button type="button" class="btn btn-ghost btn-small older" id="relOlder">' + esc(T.relOlder) + "</button>" : "");
+    box.innerHTML = html;
+    openHash();
   }
 
-  function renderShot() {
-    var imgs = document.querySelectorAll(".frame img");
-    for (var i = 0; i < imgs.length; i++) imgs[i].classList.toggle("on", i === shot);
-    document.querySelectorAll(".tabs button").forEach(function (b) {
-      b.setAttribute("aria-selected", String(+b.getAttribute("data-shot") === shot));
-    });
-    $("caption").textContent = TEXT[lang]["cap" + shot];
+  // #v27.5.0 opens that release and scrolls to it (once the list is in).
+  function openHash() {
+    var id = decodeURIComponent((location.hash || "").slice(1));
+    if (!/^v\d/.test(id)) return;
+    var el = document.getElementById(id);
+    if (!el) return;
+    var grp = el.closest(".tl-group");
+    if (grp && grp.hidden) { showOlder = true; renderReleases(); return; }
+    if (el.tagName === "DETAILS") { el.open = true; el.classList.add("hit"); }
+    el.scrollIntoView({ block: "start" });
   }
+  window.addEventListener("hashchange", openHash);
+
+  var showOlder = false;
+  document.addEventListener("click", function (e) {
+    if (e.target.closest && e.target.closest("#relOlder")) { showOlder = true; renderReleases(); return; }
+    var b = e.target.closest && e.target.closest(".copylink");
+    if (!b) return;
+    var url = location.href.split("#")[0] + "#" + b.getAttribute("data-copy"), T = TEXT[lang];
+    var done = function () { b.textContent = T.relCopied; setTimeout(function () { b.textContent = T.relCopy; }, 1400); };
+    if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, function () {});
+    history.replaceState(null, "", "#" + b.getAttribute("data-copy"));
+  });
 
   function apply() {
     var T = TEXT[lang];
@@ -568,7 +925,7 @@
     document.querySelectorAll(".lang button").forEach(function (b) {
       b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang));
     });
-    renderMeta(); renderReleases(); renderShot();
+    renderMeta(); renderReleases();
   }
 
   document.querySelectorAll(".lang button").forEach(function (b) {
@@ -578,14 +935,94 @@
       apply();
     });
   });
-  document.querySelectorAll(".tabs button").forEach(function (b) {
-    b.addEventListener("click", function () { shot = +b.getAttribute("data-shot"); renderShot(); });
-  });
-
   apply();
 
+  // 3D stages: hero and feature close-ups.
+  var SW = 2902, SH = 1856;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function box(s) { return s.split(/\s+/).map(Number); }
+
+  // Crops: an <img> of the whole capture, offset so only the box shows.
+  document.querySelectorAll('.crop').forEach(function (el) {
+    var b = box(el.dataset.box), x = b[0], y = b[1], w = b[2], h = b[3];
+    var dm = el.dataset.dim ? box(el.dataset.dim) : [SW, SH];
+    if (!el.hasAttribute('data-fill')) el.style.aspectRatio = w + ' / ' + h;
+    if (!el.style.width) el.style.width = '100%';
+    if (el.hasAttribute('data-fill')) el.style.height = '100%';
+    var img = new Image();
+    img.src = el.dataset.src; img.alt = ''; img.decoding = 'async';
+    img.style.width = (dm[0] / w * 100) + '%';
+    img.style.height = (dm[1] / h * 100) + '%';
+    img.style.left = (-x / w * 100) + '%';
+    img.style.top = (-y / h * 100) + '%';
+    el.appendChild(img);
+  });
+
+  // Layers placed at their real spot, relative to the full window or to a parent box.
+  document.querySelectorAll('.layer[data-place]').forEach(function (el) {
+    var p = box(el.dataset.place);
+    var r = el.dataset.rel ? box(el.dataset.rel) : [0, 0, SW, SH];
+    el.style.left = ((p[0] - r[0]) / r[2] * 100) + '%';
+    el.style.top = ((p[1] - r[1]) / r[3] * 100) + '%';
+    el.style.width = (p[2] / r[2] * 100) + '%';
+  });
+
+  // Lens: perspective distance = stage width * focal / 36 (full-frame horizontal).
+  var stages = [].slice.call(document.querySelectorAll('.stage'));
+  function applyLens() {
+    stages.forEach(function (st) {
+      var f = Number(st.dataset.lens || 70);
+      var w = st.querySelector('.rig').getBoundingClientRect().width || 600;
+      st.style.setProperty('--persp', Math.round(w * 1.15 * f / 36) + 'px');
+    });
+  }
+
+  // Hero: layers settle together as the hero scrolls away.
+  var heroStage = document.getElementById('heroStage');
+  function onScroll() {
+    var base = 0.35;
+    var k = 1;
+    if (!reduce) {
+      // Fully closed by the time the rig sits in the middle of the viewport.
+      var r = heroStage.getBoundingClientRect();
+      var end = window.scrollY + r.top + r.height / 2 - window.innerHeight / 2;
+      var p = end > 0 ? Math.min(1, Math.max(0, window.scrollY / end)) : 1;
+      k = 1 - p;
+    }
+    heroStage.style.setProperty('--explode', (base * k).toFixed(3));
+  }
+  // Close-ups do the opposite: layers lift off as the shot rises from the bottom edge to the
+  // middle of the viewport, then stay up; only scrolling back up lowers them.
+  var shotStages = [].slice.call(document.querySelectorAll('.shot .stage'));
+  function onShots() {
+    shotStages.forEach(function (st) {
+      var p = 1;
+      if (!reduce) {
+        var r = st.getBoundingClientRect();
+        var mid = r.top + r.height / 2, vh = window.innerHeight;
+        p = Math.min(1, Math.max(0, (vh - mid) / (vh * 0.5)));
+        p = p * p * (3 - 2 * p);
+      }
+      st.style.setProperty('--explode', p.toFixed(3));
+    });
+  }
+  window.addEventListener('scroll', function () { onScroll(); onShots(); }, { passive: true });
+  window.addEventListener('resize', onShots);
+
+  // The rig turns a little toward the cursor.
+  if (!reduce) stages.forEach(function (st) {
+    st.addEventListener('pointermove', function (e) {
+      var r = st.getBoundingClientRect();
+      st.style.setProperty('--px', (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+    });
+    st.addEventListener('pointerleave', function () { st.style.setProperty('--px', 0); });
+  });
+
+  window.addEventListener('resize', applyLens);
+  applyLens(); onScroll(); onShots();
+
   // One call gives the latest release (download links, meta line) and the list below.
-  fetch("https://api.github.com/repos/" + REPO + "/releases?per_page=6")
+  fetch("https://api.github.com/repos/" + REPO + "/releases?per_page=24")
     .then(function (r) { return r.ok ? r.json() : []; })
     .then(function (list) {
       list = (list || []).filter(function (r) { return !r.draft && !r.prerelease; });
