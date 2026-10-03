@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<!--
+  Roadmap for the whole app, next to index.html on the public monos-releases
+  site. Four tiers (just shipped, next release, planned, exploring), each item
+  tagged with an area so the chips can filter. Same tokens, header and two
+  languages as index.html; the language choice is shared through localStorage.
+  Public page: demo names only, no client, project, machine or person names.
+-->
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="What's new in Monos, what the next update brings, and what we're planning next.">
+<meta property="og:title" content="Monos roadmap">
+<meta property="og:description" content="What's new in Monos, what the next update brings, and what we're planning next.">
+<meta property="og:image" content="https://simplekile.github.io/monos-releases/shots/v2/asset_selected_dim_neutral.webp">
+<title>Monos roadmap</title>
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Syne:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #09090b;
+    --surface: #111114;
+    --surface-2: #16161a;
+    --line: rgba(255, 255, 255, 0.07);
+    --line-2: rgba(255, 255, 255, 0.12);
+    --text: #fafafa;
+    --text-2: #d4d4d8;
+    --muted: #8b8b94;
+    --faint: #5c5c66;
+    --accent: #3b82f6;
+    --accent-2: #93c5fd;
+    --ok: #22c55e;
+    --warn: #f59e0b;
+    --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+    --wrap: 1120px;
+  }
+  [hidden] { display: none !important; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    color: var(--text); background: var(--bg);
+    font: 15px/1.6 Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .wrap { width: 100%; max-width: var(--wrap); margin: 0 auto; padding: 0 16px; }
+  @media (min-width: 720px) { .wrap { padding: 0 32px; } }
+
+  /* Top bar */
+  header.top { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(12px);
+               background: rgba(9, 9, 11, .72); border-bottom: 1px solid var(--line); }
+  header.top .wrap { display: flex; align-items: center; gap: 16px; height: 56px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo img { width: 22px; height: 22px; border-radius: 5px; }
+  .logo b { font: 700 19px/1 Syne, Inter, sans-serif; letter-spacing: -.01em; }
+  .logo b i { font-style: normal; color: var(--accent); }
+  nav.links { display: none; gap: 4px; margin-left: 8px; }
+  @media (min-width: 820px) { nav.links { display: flex; } }
+  nav.links a { padding: 6px 10px; border-radius: 8px; text-decoration: none; color: var(--muted);
+                font-size: 13.5px; font-weight: 500; transition: color .22s ease-out, background .22s ease-out; }
+  nav.links a:hover { color: var(--text); background: rgba(255, 255, 255, .05); transition-duration: .08s; }
+  .spacer { flex: 1; }
+
+  .lang { display: flex; padding: 2px; border-radius: 8px; background: rgba(255, 255, 255, .04);
+          border: 1px solid var(--line); }
+  .lang button { all: unset; cursor: pointer; padding: 3px 9px; border-radius: 6px;
+                 font: 500 11.5px/18px var(--mono); color: var(--muted);
+                 transition: color .22s ease-out, background .22s ease-out; }
+  .lang button:hover { color: var(--text); background: rgba(255, 255, 255, .06); transition-duration: .08s; }
+  .lang button[aria-pressed="true"] { color: #fff; background: var(--accent); }
+  .lang button[aria-pressed="true"]:hover { background: #5c9bff; }
+  .lang button:focus-visible { box-shadow: 0 0 0 2px rgba(96, 165, 250, .7); }
+
+  /* Buttons (same recipe as open.html) */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+         font-weight: 600; border-radius: 10px; cursor: pointer; user-select: none; outline: none; white-space: nowrap;
+         transition: background .22s ease-out, border-color .22s ease-out, color .22s ease-out,
+                     box-shadow .22s ease-out, transform .22s ease-out; }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+  .btn:hover, .btn:active { transition-duration: .08s; }
+  .btn:focus-visible { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px rgba(96, 165, 250, .7); }
+  .btn-primary { height: 48px; padding: 0 22px 0 18px; font-size: 15px; color: #fff;
+                 background: linear-gradient(180deg, #4b8df8 0%, #2f6fe4 100%);
+                 border: 1px solid rgba(255, 255, 255, .10);
+                 box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 8px 24px -10px rgba(59, 130, 246, .75); }
+  .btn-primary:hover { background: linear-gradient(180deg, #5c9bff 0%, #3b7cf0 100%);
+                       box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 10px 28px -10px rgba(59, 130, 246, .9); }
+  .btn-primary:active { transform: translateY(1px); background: linear-gradient(180deg, #2f6fe4 0%, #2563eb 100%);
+                        box-shadow: inset 0 1px 2px rgba(0, 0, 0, .25), 0 4px 12px -8px rgba(59, 130, 246, .6); }
+  .btn-small { height: 34px; padding: 0 14px 0 12px; font-size: 13px; }
+  .btn-ghost { height: 48px; padding: 0 18px; font-size: 14px; font-weight: 500; color: var(--text-2);
+               background: rgba(255, 255, 255, .03); border: 1px solid var(--line-2); }
+  .btn-ghost:hover { color: var(--text); background: rgba(59, 130, 246, .10); border-color: rgba(59, 130, 246, .45); }
+  .btn-ghost:active { transform: translateY(1px); background: rgba(59, 130, 246, .16); }
+
+  /* Final CTA + footer */
+  .final { margin: 110px 0 0; padding: 48px 24px; text-align: center; border-radius: 18px; border: 1px solid var(--line);
+           background: radial-gradient(520px 240px at 50% 0%, rgba(59, 130, 246, .16), transparent 70%), var(--surface); }
+  .final h2 { margin: 0; }
+  .final .cta { margin-top: 24px; }
+  footer { margin-top: 64px; border-top: 1px solid var(--line); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; padding-top: 22px; padding-bottom: 36px;
+                 font: 400 12px/1.5 var(--mono); color: var(--faint); }
+  footer a { text-decoration: none; color: var(--muted); }
+  footer a:hover { color: var(--text); }
+
+  nav.links a[aria-current="page"] { color: var(--text); background: rgba(255, 255, 255, .06); }
+
+  /* Page head */
+  .head { position: relative; padding: 64px 0 0; }
+  .head::before { content: ""; position: absolute; inset: -80px 0 auto; height: 520px; pointer-events: none;
+                  background: radial-gradient(560px 300px at 20% 20%, rgba(59, 130, 246, .14), transparent 70%); }
+  .kicker { position: relative; font: 500 11.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  .head h1 { position: relative; margin: 14px 0 0; font: 700 clamp(40px, 7vw, 72px)/1 Syne, Inter, sans-serif; letter-spacing: -.025em; }
+  .head h1 i { font-style: normal; color: var(--accent); }
+  .head .lede { position: relative; max-width: 62ch; margin: 16px 0 0; color: var(--text-2); font-size: clamp(15px, 2vw, 17px); }
+  .head .note { position: relative; max-width: 62ch; margin: 10px 0 0; color: var(--muted); font-size: 13.5px; }
+
+  /* Area filter */
+  .filters { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 28px; }
+  .filters button { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px;
+                    border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--muted); border: 1px solid var(--line);
+                    transition: color .22s ease-out, background .22s ease-out, border-color .22s ease-out; }
+  .filters button:hover { color: var(--text); background: rgba(255, 255, 255, .05); border-color: var(--line-2); transition-duration: .08s; }
+  .filters button[aria-pressed="true"] { color: var(--text); background: rgba(59, 130, 246, .14); border-color: rgba(59, 130, 246, .5); }
+  .filters button[aria-pressed="true"]:hover { background: rgba(59, 130, 246, .2); }
+  .filters button:focus-visible { box-shadow: 0 0 0 2px rgba(96, 165, 250, .7); }
+  .filters .n { font: 500 11px/1 var(--mono); color: var(--faint); font-variant-numeric: tabular-nums; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+
+  /* Area colours (data only; the accent stays blue) */
+  .a-assets { --area: #93c5fd; } .a-io { --area: #5eead4; } .a-review { --area: #fca5a5; }
+  .a-home { --area: #fcd34d; } .a-ask { --area: #c4b5fd; } .a-app { --area: #d4d4d8; }
+  .a-assets .dot, .dot.a-assets, .a-io .dot, .dot.a-io, .a-review .dot, .dot.a-review,
+  .a-home .dot, .dot.a-home, .a-ask .dot, .dot.a-ask, .a-app .dot, .dot.a-app { background: var(--area); }
+
+  /* Tiers: a label column and a grid of items, joined by a rail */
+  .tiers { display: grid; gap: 48px; margin-top: 44px; }
+  .tier { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 860px) { .tier { grid-template-columns: 220px 1fr; gap: 28px; } }
+  .tier-label { display: flex; flex-direction: column; gap: 8px; }
+  @media (min-width: 860px) { .tier-label { position: sticky; top: 76px; align-self: start; } }
+  .stage { display: inline-flex; align-self: flex-start; align-items: center; gap: 7px; padding: 4px 10px; border-radius: 999px;
+           font: 500 11px/1.3 var(--mono); letter-spacing: .04em; text-transform: uppercase; border: 1px solid; }
+  .stage i { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+  .s-shipped { color: #86efac; background: rgba(34, 197, 94, .1); border-color: rgba(34, 197, 94, .32); }
+  .s-next { color: #93c5fd; background: rgba(59, 130, 246, .1); border-color: rgba(59, 130, 246, .34); }
+  .s-planned { color: #c4b5fd; background: rgba(139, 92, 246, .1); border-color: rgba(139, 92, 246, .32); }
+  .s-exploring { color: #fcd34d; background: rgba(245, 158, 11, .09); border-color: rgba(245, 158, 11, .3); }
+  .tier-label h2 { margin: 2px 0 0; font: 700 26px/1.1 Syne, Inter, sans-serif; letter-spacing: -.01em; text-wrap: balance; }
+  .tier-label p { margin: 0; color: var(--muted); font-size: 13.5px; max-width: 34ch; }
+
+  .groups { display: grid; gap: 18px; min-width: 0; }
+  .group h3 { margin: 0 0 8px; font: 500 12px/1 var(--mono); color: var(--faint); letter-spacing: .04em; }
+  .items { display: grid; gap: 8px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .items { grid-template-columns: repeat(2, 1fr); } }
+  .item { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: 13px 14px; border-radius: 12px;
+          border: 1px solid var(--line); background: var(--surface); transition: border-color .22s ease-out; }
+  .item:hover { border-color: var(--line-2); transition-duration: .08s; }
+  .item .dot { margin-top: 7px; }
+  .item b { display: block; font-weight: 500; font-size: 14.5px; color: var(--text); line-height: 1.4; }
+  .item span { display: block; margin-top: 3px; font: 400 11.5px/1.3 var(--mono); color: var(--faint); }
+  .tier.exploring .item { background: transparent; border-style: dashed; }
+  .empty { color: var(--faint); font-size: 13.5px; padding: 6px 0; }
+  .tier[hidden] { display: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .filters button, .item { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="./"><img src="favicon.png" alt=""><b>Monos<i>.</i></b></a>
+    <nav class="links">
+      <a href="./#features" data-t="navFeatures"></a>
+      <a href="./#install" data-t="navInstall"></a>
+      <a href="./#releases" data-t="navReleases"></a>
+      <a href="roadmap.html" aria-current="page" data-t="navRoadmap"></a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="vi">VI</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+    <a class="btn btn-primary btn-small" href="./#top">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+      <span data-t="dlShort"></span>
+    </a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="head">
+    <div class="wrap">
+      <div class="kicker" data-t="kicker"></div>
+      <h1>Roadmap<i>.</i></h1>
+      <p class="lede" data-t="lede"></p>
+      <p class="note" data-t="note"></p>
+      <div class="filters" id="filters" role="group"></div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <div class="tiers" id="tiers"></div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Monos<span style="color:var(--accent)">.</span></span>
+    <span class="spacer"></span>
+    <a href="https://github.com/simplekile/monos-releases/releases" rel="noopener" data-t="footReleases"></a>
+    <span data-t="footInternal"></span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var TEXT = {
+    vi: {
+      navFeatures: "Tính năng", navInstall: "Cài đặt", navReleases: "Phiên bản", navRoadmap: "Roadmap", dlShort: "Tải về",
+      kicker: "Lộ trình",
+      lede: "Monos có gì mới, bản cập nhật sắp tới mang theo gì, và những gì chúng tôi đang ấp ủ cho chặng tiếp theo.",
+      note: "Phần \"Sắp làm\" và \"Đang khám phá\" là kế hoạch của chúng tôi, nên thứ tự có thể đổi theo ưu tiên của studio. Chúng tôi đang nỗ lực khám phá những ý tưởng đột phá, và sẽ chia sẻ để mọi người cùng góp ý và phát triển.",
+      all: "Tất cả",
+      a_assets: "Asset & Pipeline", a_io: "I/O & Library", a_review: "Review", a_home: "Home & làm việc nhóm",
+      a_ask: "Ask Monos", a_app: "App & cập nhật",
+      s_shipped: "Vừa ra mắt", s_next: "Bản tới", s_planned: "Sắp làm", s_exploring: "Đang khám phá",
+      p_shipped: "Đã có", p_next: "Sắp phát hành", p_planned: "Đã lên kế hoạch", p_exploring: "Chưa hứa",
+      d_shipped: "Đã có trong tay bạn, từ các bản gần đây.",
+      d_next: "Đã làm xong, sẽ đến cùng bản cập nhật kế tiếp.",
+      d_planned: "Những việc chúng tôi sẽ bắt tay vào làm tiếp theo.",
+      d_exploring: "Những hướng chúng tôi đang tìm hiểu cho về sau, chưa định ngày.",
+      none: "Chưa có mục nào cho khu vực này ở tầng này.",
+      none_next: "Chưa có gì cho bản tới. Tính năng nào làm xong sẽ hiện ở đây.",
+      loading: "Đang tải…", failed: "Chưa tải được danh sách. Xem các bản phát hành trên GitHub.",
+      g_new: "Mới", g_improved: "Cải thiện", g_fixed: "Sửa lỗi",
+      footReleases: "Các bản phát hành trên GitHub", footInternal: "Dành riêng cho thành viên studio"
+    },
+    en: {
+      navFeatures: "Features", navInstall: "Install", navReleases: "Releases", navRoadmap: "Roadmap", dlShort: "Download",
+      kicker: "Roadmap",
+      lede: "What's new in Monos, what the next update brings, and what we're planning for the road ahead.",
+      note: "\"Planned\" and \"Exploring\" are our plans, so the order can shift with the studio's priorities. We're hard at work exploring bold new ideas, and we'll share them so everyone can weigh in and help shape them.",
+      all: "All",
+      a_assets: "Assets & Pipeline", a_io: "I/O & Library", a_review: "Review", a_home: "Home & teamwork",
+      a_ask: "Ask Monos", a_app: "App & updates",
+      s_shipped: "Just shipped", s_next: "Next release", s_planned: "Planned", s_exploring: "Exploring",
+      p_shipped: "Available now", p_next: "Coming next", p_planned: "Planned", p_exploring: "Not a promise",
+      d_shipped: "Already in your hands, from the latest versions.",
+      d_next: "Done, and on its way with the next update.",
+      d_planned: "What we're getting to next.",
+      d_exploring: "Directions we're exploring for later, with no dates yet.",
+      none: "Nothing for this area in this tier yet.",
+      none_next: "Nothing for the next update yet. Features show up here as they're finished.",
+      loading: "Loading…", failed: "Couldn't load the list. See the releases on GitHub.",
+      g_new: "New", g_improved: "Improved", g_fixed: "Fixed",
+      footReleases: "Releases on GitHub", footInternal: "For studio members"
+    }
+  };
+
+  var TIERS = ["shipped", "next", "planned", "exploring"];
+  var REPO = "simplekile/monos-releases";
+  var SHIPPED_MINORS = 5, SHIPPED_PER_MINOR = 5;
+
+  // Filled by load(): areas come from roadmap.json, items from three sources.
+  //   shipped   <- GitHub releases (feature headings of the last few minors)
+  //   next      <- roadmap-next.md (release_notes/next.md, published by hand)
+  //   planned / exploring <- roadmap.json (hand-edited)
+  // Item: { tier, group, area, vi, en }. Release items are English only.
+  var DATA = { areas: {}, areaOrder: [] };
+  var AREAS = ["assets", "io", "review", "home", "ask", "app"];
+  var ITEMS = [];
+  var STATE = { shipped: "loading", next: "loading", planned: "loading", exploring: "loading" };
+
+  var lang = "vi", area = "all";
+  try { lang = localStorage.getItem("monos.lang") || ""; } catch (e) { lang = ""; }
+  if (!TEXT[lang]) lang = /^vi/i.test(navigator.language || "") ? "vi" : "en";
+  var m = (location.hash || "").match(/^#(assets|io|review|home|ask|app)$/);
+  if (m) area = m[1];
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  // ---- release notes markdown -> features ----
+  // Format (release_notes/<version>.md): "### New|Improved|Fixed" sections,
+  // "**Heading**" lines with bullets under them, or plain bullets.
+  function plain(t) {
+    return t.replace(/\*\*|__|`/g, "").replace(/\[([^\]]*)\]\([^)]*\)/g, "$1").trim();
+  }
+  function parseNotes(md) {
+    var out = [], section = "new", cur = null;
+    String(md || "").split(/\r?\n/).forEach(function (raw) {
+      var line = raw.trim(), h;
+      if (!line || /^## /.test(line) || /^_.*_$/.test(line)) return;
+      if ((h = line.match(/^###\s+(.+)$/))) {
+        var k = h[1].toLowerCase();
+        section = /fix/.test(k) ? "fixed" : /improv/.test(k) ? "improved" : "new";
+        cur = null; return;
+      }
+      if ((h = line.match(/^\*\*(.+?)\*\*:?$/))) {
+        cur = { section: section, title: plain(h[1]), body: [] };
+        out.push(cur); return;
+      }
+      if ((h = line.match(/^[-*]\s+(.+)$/))) {
+        if (cur) cur.body.push(plain(h[1]));
+        else out.push({ section: section, title: plain(h[1]).split(/\.\s/)[0].replace(/\.$/, ""), body: [], bullet: true });
+      }
+    });
+    return out;
+  }
+  function kwHit(text, kw) {
+    return new RegExp("(^|[^a-z0-9])" + kw.replace(/[.*+?^${}()|[\]\\\/]/g, "\\$&")).test(text);
+  }
+  function areaOf(f) {
+    var order = DATA.areaOrder.length ? DATA.areaOrder : AREAS;
+    var texts = [f.title.toLowerCase(), f.body.join(" ").toLowerCase()];
+    for (var t = 0; t < texts.length; t++) {
+      for (var i = 0; i < order.length; i++) {
+        var kws = (DATA.areas[order[i]] || {}).keywords || [];
+        for (var j = 0; j < kws.length; j++) if (kwHit(texts[t], kws[j].toLowerCase())) return order[i];
+      }
+    }
+    return "app";
+  }
+  var SECTION_RANK = { "new": 0, improved: 1, fixed: 2 };
+  function bySection(a, b) { return SECTION_RANK[a.section] - SECTION_RANK[b.section]; }
+
+  // ---- loaders ----
+  function getJSON(url) {
+    return fetch(url, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); });
+  }
+  function getText(url) {
+    return fetch(url, { cache: "no-cache" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); });
+  }
+  // The GitHub API allows 60 calls an hour per visitor: keep the list for 10 minutes.
+  function releases() {
+    var key = "monos.roadmap.releases";
+    try {
+      var c = JSON.parse(sessionStorage.getItem(key) || "null");
+      if (c && Date.now() - c.at < 600000) return Promise.resolve(c.list);
+    } catch (e) {}
+    return getJSON("https://api.github.com/repos/" + REPO + "/releases?per_page=30").then(function (list) {
+      list = list.filter(function (r) { return !r.draft && !r.prerelease; })
+                 .map(function (r) { return { tag: r.tag_name, body: r.body || "" }; });
+      try { sessionStorage.setItem(key, JSON.stringify({ at: Date.now(), list: list })); } catch (e) {}
+      return list;
+    });
+  }
+
+  function addShipped(list) {
+    var minors = [], byMinor = {};
+    list.forEach(function (r) {
+      var v = String(r.tag).match(/(\d+)\.(\d+)\.(\d+)/);
+      if (!v) return;
+      var key = v[1] + "." + v[2];
+      if (!byMinor[key]) {
+        if (minors.length >= SHIPPED_MINORS) return;
+        byMinor[key] = []; minors.push(key);
+      }
+      byMinor[key].push({ patch: +v[3], feats: parseNotes(r.body) });
+    });
+    // roadmap.json "skip": headings that come with every release (the release art, say).
+    var skip = (DATA.skip || []).map(function (t) { return t.toLowerCase(); });
+    minors.forEach(function (key) {
+      var feats = [], seen = {};
+      byMinor[key].sort(function (a, b) { return a.patch - b.patch; }).forEach(function (r) {
+        r.feats.forEach(function (f) { feats.push(f); });
+      });
+      // Feature headings before loose bullets, New before Improved before Fixed.
+      feats.sort(function (a, b) { return (a.bullet ? 1 : 0) - (b.bullet ? 1 : 0) || bySection(a, b); });
+      feats.forEach(function (f) {
+        var id = f.title.toLowerCase();
+        if (skip.indexOf(id) >= 0 || seen[id] || Object.keys(seen).length >= SHIPPED_PER_MINOR) return;
+        seen[id] = 1;
+        ITEMS.push({ tier: "shipped", group: key, area: areaOf(f), en: f.title });
+      });
+    });
+  }
+  function addNext(md) {
+    // Headings and loose bullets alike: every line here is something new in the next update.
+    parseNotes(md).sort(bySection).forEach(function (f) {
+      ITEMS.push({ tier: "next", group: f.section, area: areaOf(f), en: f.title });
+    });
+  }
+  function addPlanned(data) {
+    ["planned", "exploring"].forEach(function (tier) {
+      (data[tier] || []).forEach(function (it) {
+        ITEMS.push({ tier: tier, group: "", area: it.area, vi: it.vi, en: it.en });
+      });
+    });
+  }
+
+  function load() {
+    var json = getJSON("roadmap.json").then(function (d) {
+      DATA = d;
+      if (d.areaOrder) AREAS = AREAS.filter(function (a) { return d.areas && d.areas[a]; });
+      addPlanned(d);
+      STATE.planned = STATE.exploring = "ok";
+    }, function () { STATE.planned = STATE.exploring = "failed"; });
+    // Areas (keywords) must be known before release items are sorted into them.
+    json.then(function () {
+      apply();
+      releases().then(function (list) { addShipped(list); STATE.shipped = "ok"; },
+                      function () { STATE.shipped = "failed"; }).then(apply);
+      // No roadmap-next.md (or an empty one) means nothing is queued yet.
+      getText("roadmap-next.md").then(addNext, function () {}).then(function () { STATE.next = "ok"; apply(); });
+    });
+  }
+
+  function itemText(it) { return (lang === "vi" && it.vi) || it.en; }
+  function areaName(a) {
+    var d = DATA.areas && DATA.areas[a];
+    return (d && d[lang]) || TEXT[lang]["a_" + a] || a;
+  }
+  function groupName(tier, g) {
+    if (tier === "next") return TEXT[lang]["g_" + g] || "";
+    return g;
+  }
+
+  function renderFilters() {
+    var T = TEXT[lang];
+    var count = function (a) { return ITEMS.filter(function (it) { return a === "all" || it.area === a; }).length; };
+    document.getElementById("filters").innerHTML = ["all"].concat(AREAS).map(function (a) {
+      return '<button type="button" data-area="' + a + '" aria-pressed="' + (a === area) + '"' + (a === "all" ? "" : ' class="a-' + a + '"') + '>' +
+        (a === "all" ? "" : '<span class="dot"></span>') + esc(a === "all" ? T.all : areaName(a)) +
+        ' <span class="n">' + count(a) + "</span></button>";
+    }).join("");
+  }
+
+  function renderTiers() {
+    var T = TEXT[lang], box = document.getElementById("tiers");
+    box.innerHTML = TIERS.map(function (tier) {
+      var list = ITEMS.filter(function (it) { return it.tier === tier && (area === "all" || it.area === area); });
+      var groups = [], byGroup = {};
+      list.forEach(function (it) {
+        if (!byGroup[it.group]) { byGroup[it.group] = []; groups.push(it.group); }
+        byGroup[it.group].push(it);
+      });
+      var body;
+      if (STATE[tier] === "loading") body = '<p class="empty">' + esc(T.loading) + "</p>";
+      else if (STATE[tier] === "failed") body = '<p class="empty"><a href="https://github.com/' + REPO + '/releases" rel="noopener">' + esc(T.failed) + "</a></p>";
+      else body = list.length ? groups.map(function (g) {
+        var label = groupName(tier, g);
+        return '<div class="group">' + (label ? "<h3>" + esc(label) + "</h3>" : "") + '<div class="items">' +
+          byGroup[g].map(function (it) {
+            return '<div class="item a-' + it.area + '"><span class="dot"></span><div><b>' + esc(itemText(it)) +
+              "</b><span>" + esc(areaName(it.area)) + "</span></div></div>";
+          }).join("") + "</div></div>";
+      }).join("") : '<p class="empty">' + esc(tier === "next" && !ITEMS.some(function (it) { return it.tier === "next"; }) ? T.none_next : T.none) + "</p>";
+      return '<section class="tier ' + tier + '" id="' + tier + '"><div class="tier-label">' +
+        '<span class="stage s-' + tier + '"><i></i>' + esc(T["p_" + tier]) + "</span>" +
+        "<h2>" + esc(T["s_" + tier]) + "</h2><p>" + esc(T["d_" + tier]) + "</p></div>" +
+        '<div class="groups">' + body + "</div></section>";
+    }).join("");
+  }
+
+  function apply() {
+    var T = TEXT[lang];
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-t]").forEach(function (el) {
+      var v = T[el.getAttribute("data-t")];
+      if (v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll(".lang button").forEach(function (b) {
+      b.setAttribute("aria-pressed", String(b.getAttribute("data-lang") === lang));
+    });
+    renderFilters(); renderTiers();
+  }
+
+  document.querySelectorAll(".lang button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      lang = b.getAttribute("data-lang");
+      try { localStorage.setItem("monos.lang", lang); } catch (e) {}
+      apply();
+    });
+  });
+  document.getElementById("filters").addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("button[data-area]");
+    if (!b) return;
+    area = b.getAttribute("data-area");
+    history.replaceState(null, "", area === "all" ? location.pathname : "#" + area);
+    renderFilters(); renderTiers();
+  });
+
+  // roadmap.html#ask (a link, or the address bar) opens on that area.
+  window.addEventListener("hashchange", function () {
+    var h = (location.hash || "").match(/^#(assets|io|review|home|ask|app)$/);
+    area = h ? h[1] : "all";
+    renderFilters(); renderTiers();
+  });
+
+  apply();
+  load();
+})();
+</script>
+</body>
+</html>

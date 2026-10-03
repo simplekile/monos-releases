@@ -107,7 +107,7 @@
   .btn-ghost:active { transform: translateY(1px); background: rgba(59, 130, 246, .16); }
 
   /* Hero */
-  .hero { position: relative; padding: 72px 0 0; text-align: center; }
+  .hero { position: relative; padding: 72px 0 0; text-align: center; overflow-x: clip; }
   .hero::before { content: ""; position: absolute; inset: -80px 0 auto; height: 620px; pointer-events: none;
                   background: radial-gradient(640px 360px at 50% 30%, rgba(59, 130, 246, .16), transparent 70%); }
   .eyebrow { position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px 5px 10px;
@@ -319,6 +319,7 @@
 
   .more { display: inline-block; margin-top: 16px; font-size: 14px; color: var(--muted); text-decoration: none; }
   .more:hover { color: var(--text); }
+  .more-links { display: flex; flex-wrap: wrap; gap: 0 24px; }
 
   /* Final CTA + footer */
   .final { margin: 110px 0 0; padding: 48px 24px; text-align: center; border-radius: 18px; border: 1px solid var(--line);
@@ -346,6 +347,7 @@
       <a href="#features" data-t="navFeatures"></a>
       <a href="#install" data-t="navInstall"></a>
       <a href="#releases" data-t="navReleases"></a>
+      <a href="roadmap.html" data-t="navRoadmap"></a>
     </nav>
     <div class="spacer"></div>
     <div class="lang" role="group" aria-label="Language">
@@ -586,7 +588,10 @@
       <div class="kicker" data-t="relKicker"></div>
       <h2 data-t="relTitle"></h2>
       <div class="rel" id="rel"><p class="rel-empty" data-t="relLoading"></p></div>
-      <a class="more" href="https://github.com/simplekile/monos-releases/releases" rel="noopener" data-t="relAll"></a>
+      <div class="more-links">
+        <a class="more" href="roadmap.html" data-t="relRoadmap"></a>
+        <a class="more" href="https://github.com/simplekile/monos-releases/releases" rel="noopener" data-t="relAll"></a>
+      </div>
     </div>
   </section>
 
@@ -607,6 +612,7 @@
   <div class="wrap">
     <span>Monos<span style="color:var(--accent)">.</span> <span id="foot-ver"></span></span>
     <span class="spacer"></span>
+    <a href="roadmap.html" data-t="navRoadmap"></a>
     <a href="https://github.com/simplekile/monos-releases/releases" rel="noopener" data-t="footReleases"></a>
     <span data-t="footInternal"></span>
   </div>
@@ -619,7 +625,7 @@
 
   var TEXT = {
     vi: {
-      navFeatures: "Tính năng", navInstall: "Cài đặt", navReleases: "Phiên bản",
+      navFeatures: "Tính năng", navInstall: "Cài đặt", navReleases: "Phiên bản", navRoadmap: "Roadmap",
       dlShort: "Tải về", dlWin: "Tải bản Windows", seeMore: "Xem tính năng",
       eyebrow: "Công cụ pipeline của studio",
       lede: "Quản lý asset, shot, xem review và gửi file cho khách, tất cả trong một app. Hết cảnh lục thư mục tìm file hay mở nhầm version cũ.",
@@ -648,7 +654,7 @@
       smartscreen: "Lần đầu chạy bộ cài, <b>Windows SmartScreen</b> có thể hiện cảnh báo. Bấm <b>More info</b> rồi chọn <b>Run anyway</b> là được.",
       relKicker: "Phiên bản", relTitle: "Có gì mới",
       relLoading: "Đang tải danh sách phiên bản…", relFail: "Chưa tải được danh sách, bạn xem trực tiếp ở trang Releases nhé.",
-      relLatest: "mới nhất", relAll: "Xem tất cả các bản trên GitHub →", relDl: "Tải bản này", relNoNotes: "Bản này không có ghi chú.",
+      relLatest: "mới nhất", relAll: "Xem tất cả các bản trên GitHub →", relRoadmap: "Roadmap: bản tới và kế hoạch →", relDl: "Tải bản này", relNoNotes: "Bản này không có ghi chú.",
       relNew: "mới", relImproved: "cải thiện", relFixed: "sửa lỗi", relChanges: "thay đổi",
       relCopy: "Chép link", relCopied: "Đã chép", relReleased: "Phát hành", relOlder: "Xem các bản cũ hơn",
       finalTitle: "Cài Monos ngay",
@@ -681,7 +687,7 @@
       moreTitle: "Và phần còn lại của pipeline"
     },
     en: {
-      navFeatures: "Features", navInstall: "Install", navReleases: "Releases",
+      navFeatures: "Features", navInstall: "Install", navReleases: "Releases", navRoadmap: "Roadmap",
       dlShort: "Download", dlWin: "Download for Windows", seeMore: "See features",
       eyebrow: "The studio pipeline app",
       lede: "Assets, shots, review and delivery in one window. Open the right work file, send to the right place, see the latest version.",
@@ -710,7 +716,7 @@
       smartscreen: "<b>Windows SmartScreen</b> may warn you the first time. Click <b>More info</b>, then <b>Run anyway</b>.",
       relKicker: "Releases", relTitle: "What's new",
       relLoading: "Loading releases…", relFail: "Could not load releases. See the Releases page.",
-      relLatest: "latest", relAll: "All releases on GitHub →", relDl: "Download this version", relNoNotes: "No notes.",
+      relLatest: "latest", relAll: "All releases on GitHub →", relRoadmap: "Roadmap: what's next →", relDl: "Download this version", relNoNotes: "No notes.",
       relNew: "new", relImproved: "improved", relFixed: "fixed", relChanges: "changes",
       relCopy: "Copy link", relCopied: "Copied", relReleased: "Released", relOlder: "Show older releases",
       finalTitle: "Ready to start?",

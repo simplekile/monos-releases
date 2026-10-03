@@ -1,0 +1,232 @@
+{
+  "_comment": "Hand-edited tiers of the roadmap. 'Just shipped' is read from the GitHub releases and 'Next release' from release_notes/next.md (published as roadmap-next.md). See docs/ROADMAP.md.",
+  "areas": {
+    "assets": {
+      "vi": "Asset & Pipeline",
+      "en": "Assets & Pipeline",
+      "keywords": [
+        "asset",
+        "2d",
+        "dcc",
+        "department",
+        "pipeline",
+        "blend",
+        "card",
+        "work file",
+        "create",
+        "shot",
+        "grid",
+        "photoshop",
+        "illustrator",
+        "after effects"
+      ]
+    },
+    "io": {
+      "vi": "I/O & Library",
+      "en": "I/O & Library",
+      "keywords": [
+        "inbox",
+        "outbox",
+        "library",
+        "project guide",
+        "tag",
+        "copies",
+        "distribute",
+        "i/o",
+        "publish",
+        "submit"
+      ]
+    },
+    "review": {
+      "vi": "Review",
+      "en": "Review",
+      "keywords": [
+        "review",
+        "player",
+        "playback",
+        "video"
+      ]
+    },
+    "home": {
+      "vi": "Home & làm việc nhóm",
+      "en": "Home & teamwork",
+      "keywords": [
+        "home",
+        "feed",
+        "discord",
+        "team",
+        "note",
+        "backup",
+        "sign in",
+        "studio"
+      ]
+    },
+    "ask": {
+      "vi": "Ask Monos",
+      "en": "Ask Monos",
+      "keywords": [
+        "ask",
+        "watch",
+        "assistant",
+        "render",
+        "services",
+        "node"
+      ]
+    },
+    "app": {
+      "vi": "App & cập nhật",
+      "en": "App & updates",
+      "keywords": [
+        "update",
+        "install",
+        "theme",
+        "colour",
+        "settings",
+        "add-on",
+        "setup",
+        "button",
+        "dropbox"
+      ]
+    }
+  },
+  "areaOrder": [
+    "ask",
+    "review",
+    "home",
+    "io",
+    "assets",
+    "app"
+  ],
+  "skip": [
+    "A picture for what's new"
+  ],
+  "planned": [
+    {
+      "area": "ask",
+      "vi": "Hỏi về hoạt động gần đây: \"hôm nay ai publish gì\"",
+      "en": "Ask about recent activity: \"who published what today\""
+    },
+    {
+      "area": "ask",
+      "vi": "Hỏi về Inbox và Outbox: \"client gửi gì hôm nay\"",
+      "en": "Ask about Inbox and Outbox: \"what did the client send today\""
+    },
+    {
+      "area": "ask",
+      "vi": "Hỏi về note của cả dự án: \"note nào nhắc tới tôi\"",
+      "en": "Ask about notes across the project: \"notes that mention me\""
+    },
+    {
+      "area": "ask",
+      "vi": "Hỏi tiến độ theo department",
+      "en": "Ask about progress by department"
+    },
+    {
+      "area": "ask",
+      "vi": "Settings › Assistant dễ hiểu hơn: thẻ trạng thái, chọn máy chạy dịch vụ nền (có hỏi ý kiến máy đó)",
+      "en": "A clearer Settings › Assistant: a status card, and picking the machine that runs the services (that machine is asked first)"
+    },
+    {
+      "area": "io",
+      "vi": "Library: gửi cả một collection",
+      "en": "Library: submit a whole collection"
+    },
+    {
+      "area": "io",
+      "vi": "Library: turntable và clay render tự động",
+      "en": "Library: automatic turntable and clay renders"
+    },
+    {
+      "area": "app",
+      "vi": "Trash: số lượng trên badge, dung lượng, Undo ngay trong thông báo xoá, Restore to…",
+      "en": "Trash: a count badge, size, Undo in the delete notice, Restore to…"
+    },
+    {
+      "area": "app",
+      "vi": "Getting started: mẹo theo ngữ cảnh, hiện một lần",
+      "en": "Getting started: one-time tips in context"
+    },
+    {
+      "area": "review",
+      "vi": "Chế độ A/B Difference",
+      "en": "A/B Difference mode"
+    },
+    {
+      "area": "review",
+      "vi": "Nhãn frame trên video",
+      "en": "Frame labels on video"
+    },
+    {
+      "area": "review",
+      "vi": "Nét vẽ vector theo lực bút",
+      "en": "Pressure-sensitive vector strokes"
+    },
+    {
+      "area": "home",
+      "vi": "Tab Notes và tab Schedule trên Home",
+      "en": "Notes and Schedule tabs on Home"
+    },
+    {
+      "area": "home",
+      "vi": "Ảnh trong phần trả lời",
+      "en": "Pictures in replies"
+    }
+  ],
+  "exploring": [
+    {
+      "area": "ask",
+      "vi": "Đọc nội dung script và brief",
+      "en": "Read scripts and briefs"
+    },
+    {
+      "area": "ask",
+      "vi": "Tìm trong Library",
+      "en": "Search the Library"
+    },
+    {
+      "area": "ask",
+      "vi": "Watch khi có publish hoặc note mới",
+      "en": "Watches for new publishes and notes"
+    },
+    {
+      "area": "ask",
+      "vi": "Mở thẳng file làm việc từ link",
+      "en": "Open work files straight from a link"
+    },
+    {
+      "area": "ask",
+      "vi": "Báo tiến độ render từ ROP trong Houdini và ngay trong Blender",
+      "en": "Render progress from Houdini ROPs and from inside Blender"
+    },
+    {
+      "area": "ask",
+      "vi": "Thao tác có xác nhận: đổi trạng thái, viết note, phân loại Inbox",
+      "en": "Actions with a confirm: change a status, write a note, sort the Inbox"
+    },
+    {
+      "area": "ask",
+      "vi": "Báo cáo tự động mỗi sáng",
+      "en": "An automatic morning report"
+    },
+    {
+      "area": "ask",
+      "vi": "Hỏi ngay trong Houdini và Blender, qua Slack và trên điện thoại",
+      "en": "Ask from inside Houdini and Blender, in Slack and on the phone"
+    },
+    {
+      "area": "home",
+      "vi": "Studio: tạo hoặc tham gia studio, workspace cá nhân, danh sách workspace gần đây, phân quyền theo workspace",
+      "en": "Studios: create or join one, personal workspaces, recent workspaces, permissions per workspace"
+    },
+    {
+      "area": "home",
+      "vi": "Lịch và phân công: ai làm gì, deadline",
+      "en": "Schedule and assignments: who does what, and deadlines"
+    },
+    {
+      "area": "app",
+      "vi": "Biến thể giao diện High contrast và Soft",
+      "en": "High contrast and Soft theme variants"
+    }
+  ]
+}
