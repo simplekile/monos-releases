@@ -102,31 +102,6 @@
   ],
   "planned": [
     {
-      "area": "ask",
-      "vi": "Hỏi về hoạt động gần đây: \"hôm nay ai publish gì\"",
-      "en": "Ask about recent activity: \"who published what today\""
-    },
-    {
-      "area": "ask",
-      "vi": "Hỏi về Inbox và Outbox: \"client gửi gì hôm nay\"",
-      "en": "Ask about Inbox and Outbox: \"what did the client send today\""
-    },
-    {
-      "area": "ask",
-      "vi": "Hỏi về note của cả dự án: \"note nào nhắc tới tôi\"",
-      "en": "Ask about notes across the project: \"notes that mention me\""
-    },
-    {
-      "area": "ask",
-      "vi": "Hỏi tiến độ theo department",
-      "en": "Ask about progress by department"
-    },
-    {
-      "area": "ask",
-      "vi": "Settings › Assistant dễ hiểu hơn: thẻ trạng thái, chọn máy chạy dịch vụ nền (có hỏi ý kiến máy đó)",
-      "en": "A clearer Settings › Assistant: a status card, and picking the machine that runs the services (that machine is asked first)"
-    },
-    {
       "area": "io",
       "vi": "Library: gửi cả một collection",
       "en": "Library: submit a whole collection"
@@ -163,8 +138,8 @@
     },
     {
       "area": "home",
-      "vi": "Tab Notes và tab Schedule trên Home",
-      "en": "Notes and Schedule tabs on Home"
+      "vi": "Tab Schedule trên Home",
+      "en": "A Schedule tab on Home"
     },
     {
       "area": "home",
@@ -175,38 +150,13 @@
   "exploring": [
     {
       "area": "ask",
-      "vi": "Đọc nội dung script và brief",
-      "en": "Read scripts and briefs"
-    },
-    {
-      "area": "ask",
-      "vi": "Tìm trong Library",
-      "en": "Search the Library"
-    },
-    {
-      "area": "ask",
-      "vi": "Watch khi có publish hoặc note mới",
-      "en": "Watches for new publishes and notes"
-    },
-    {
-      "area": "ask",
       "vi": "Mở thẳng file làm việc từ link",
       "en": "Open work files straight from a link"
     },
     {
       "area": "ask",
-      "vi": "Báo tiến độ render từ ROP trong Houdini và ngay trong Blender",
-      "en": "Render progress from Houdini ROPs and from inside Blender"
-    },
-    {
-      "area": "ask",
-      "vi": "Thao tác có xác nhận: đổi trạng thái, viết note, phân loại Inbox",
-      "en": "Actions with a confirm: change a status, write a note, sort the Inbox"
-    },
-    {
-      "area": "ask",
-      "vi": "Báo cáo tự động mỗi sáng",
-      "en": "An automatic morning report"
+      "vi": "Tiến độ render đọc thẳng từ ROP của Houdini và từ Blender, không cần chờ frame ra đĩa",
+      "en": "Render progress read straight from Houdini ROPs and Blender, without waiting for frames on disk"
     },
     {
       "area": "ask",
